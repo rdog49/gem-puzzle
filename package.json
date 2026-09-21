@@ -1,0 +1,28 @@
+{
+  "name": "gem-puzzle",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --mode development",
+    "start": "webpack serve --open"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rdog49/gem-puzzle.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/rdog49/gem-puzzle/issues"
+  },
+  "homepage": "https://github.com/rdog49/gem-puzzle#readme",
+  "devDependencies": {
+    "html-webpack-plugin": "^5.6.8",
+    "webpack": "^5.111.1",
+    "webpack-cli": "^7.2.3"
+  }
+}
