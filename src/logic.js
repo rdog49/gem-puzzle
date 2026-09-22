@@ -1,4 +1,3 @@
-
 let emptyRow = 3;
 let emptyCol = 3;
 
@@ -34,19 +33,19 @@ function shuffleBoard(arr) {
         const directions = [{
                 r: -1,
                 c: 0
-            }, 
+            },
             {
                 r: 1,
                 c: 0
-            }, 
+            },
             {
                 r: 0,
                 c: -1
-            }, 
+            },
             {
                 r: 0,
                 c: 1
-            } 
+            }
         ];
 
         const randomDir = directions[Math.floor(Math.random() * directions.length)];
@@ -60,4 +59,33 @@ function shuffleBoard(arr) {
         }
     }
     return arr;
+}
+
+function checkWin(arr) {
+    let counter = 1;
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
+            if (i === 3 && j === 3) {
+                return arr[i][j] === '';
+            }
+            if (arr[i][j] !== counter++) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+function makeMove(arr, row, col) {
+    const isAdjacent =
+        (row === emptyRow && Math.abs(col - emptyCol) === 1) ||
+        (col === emptyCol && Math.abs(row - emptyRow) === 1);
+
+    if (isAdjacent) {
+        swapTiles(arr, emptyRow, emptyCol, row, col);
+        emptyRow = row;
+        emptyCol = col;
+        return true;
+    }
+    return false;
 }
