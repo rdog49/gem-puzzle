@@ -50,13 +50,38 @@ body {
 .App__board-container {
   width: 430px;
   height: 430px;
-  background-color: #8fbc8f; 
-  padding: 12px;
+  background-color: #8ed790;
+  padding: 2px;
   box-sizing: border-box; 
-  border-radius: 8px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(4, 1fr);
-  gap: 8px; /* Расстояние для будущих плиток */
+  gap: 2px; 
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.App__tile {
+  background-color: #e0e0e0; 
+  display: flex;
+  border-radius: 5px;
+  border: solid black 1px;
+  justify-content: center;
+  align-items: center;
+  font-size: 32px;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s ease;
+}
+
+.App__tile:hover:not(.App__tile_empty) {
+  background-color: #d0d0d0;
+}
+
+.App__tile_empty {
+  background-color: #8ed790;
+  cursor: default;
+  box-shadow: none;
+  border: none;
 }

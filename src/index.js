@@ -33,3 +33,31 @@ mainAppContainer.appendChild(mainBoardContainer); // контейнер для �
 document.body.appendChild(mainAppContainer);
 document.body.appendChild(timerMovesPauseContainer);
 document.body.appendChild(mainAppTitle);
+
+
+let boardState = [
+  7, 6, 5, 1,
+  8, 2, 14, 3,
+  13, 15, 9, 11,
+  0, 12, 10, 4 
+];
+
+function renderBoard() {
+  mainBoardContainer.innerHTML = '';
+
+  boardState.forEach((value) => {
+    const tile = document.createElement('div');
+    tile.classList.add('App__tile');
+
+    if (value === 0) {
+      tile.classList.add('App__tile_empty');
+    } else {
+      tile.textContent = value;
+      tile.classList.add('App__tile_number');
+    }
+
+    mainBoardContainer.appendChild(tile);
+  });
+}
+
+renderBoard();
