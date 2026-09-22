@@ -15,7 +15,7 @@
   \**********************/
 () {
 
-eval("{\n\n//# sourceURL=webpack:///./src/index.js?\n}");
+eval("{\n\n//# sourceURL=webpack://gem-puzzle/./src/index.js?\n}");
 
 /***/ }
 
