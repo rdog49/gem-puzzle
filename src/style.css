@@ -1,0 +1,87 @@
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f9;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+}
+
+
+.App__main-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+.App__main-title {
+  font-size: 28px;
+  color: #333;
+  margin-bottom: 20px;
+  order: -2; 
+}
+
+
+.Secondary__container {
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;
+  width: 430px; 
+  margin-bottom: 15px;
+  order: -1; 
+}
+
+
+.App__timer,
+.App__moves-counter,
+.App_pause-resume {
+  font-size: 16px;
+  font-weight: 600;
+  color: #555;
+  margin: 0;
+  cursor: pointer; /* Для логики кнопки в будущем */
+}
+
+
+.App__board-container {
+  width: 430px;
+  height: 430px;
+  background-color: #8ed790;
+  padding: 2px;
+  box-sizing: border-box; 
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  gap: 2px; 
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.App__tile {
+  background-color: #e0e0e0; 
+  display: flex;
+  border-radius: 5px;
+  border: solid black 1px;
+  justify-content: center;
+  align-items: center;
+  font-size: 32px;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s ease;
+}
+
+.App__tile:hover:not(.App__tile_empty) {
+  background-color: #d0d0d0;
+}
+
+.App__tile_empty {
+  background-color: #8ed790;
+  cursor: default;
+  box-shadow: none;
+  border: none;
+}

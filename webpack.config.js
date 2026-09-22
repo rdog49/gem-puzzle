@@ -15,6 +15,18 @@ module.exports = {
         clean: true,
     },
 
+    experiments: {
+        outputModule: false,
+    },
+
+    module: {
+        rules: [
+            {
+                test: /\.css$/, 
+                use: ['style-loader', 'css-loader'], 
+            },
+        ],
+    },
 
     plugins: [
         new HtmlWebpackPlugin({
