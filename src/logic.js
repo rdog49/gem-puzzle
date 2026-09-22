@@ -89,3 +89,29 @@ function makeMove(arr, row, col) {
     }
     return false;
 }
+
+const mainAppContainer = document.createElement('div');
+mainAppContainer.classList.add('App__main-container');
+
+const mainAppTitle = document.createElement('h1');
+mainAppTitle.textContent = 'Gem-puzzle game!'
+mainAppTitle.classList.add('App__main-title');
+mainAppContainer.appendChild(mainAppTitle);
+
+const mainBoardContainer = document.createElement('div');
+mainBoardContainer.classList.add('App__board-container');
+mainAppContainer.appendChild(mainBoardContainer);
+
+const appTimer = document.createElement ('h2');
+appTimer.classList.add('App__timer');
+mainAppContainer.appendChild(appTimer);
+
+const appMovesCounter = document.createElement ('h2');
+appMovesCounter.classList.add ('App__moves-counter');
+mainAppContainer.appendChild(appMovesCounter);
+
+const appPauseResumeGame = document.createElement ('button');
+appPauseResumeGame.classList.add ('App_pause-resume');
+mainAppContainer.appendChild(appPauseResumeGame);
+
+document.body.appendChild(mainAppContainer);
