@@ -1,4 +1,3 @@
-
 require('./style.css');
 
 const mainAppTitle = document.createElement('h1'); // тайтл
@@ -35,25 +34,72 @@ document.body.appendChild(timerMovesPauseContainer);
 document.body.appendChild(mainAppTitle);
 
 
-let boardState = [
-  7, 6, 5, 1,
-  8, 2, 14, 3,
-  13, 15, 9, 11,
-  0, 12, 10, 4 
-];
+
+const { moveTile, generateSolvableBoard } = require('./logic.js');
+
+let movesCount = 0;
+const movesCounterElement = appMovesCounter;
+
+let boardState = generateSolvableBoard(4);
 
 function renderBoard() {
   mainBoardContainer.innerHTML = '';
 
-  boardState.forEach((value) => {
+  boardState.forEach((value, index) => {
     const tile = document.createElement('div');
     tile.classList.add('App__tile');
-
+    
     if (value === 0) {
+      
       tile.classList.add('App__tile_empty');
+
+      // Разрешаем сброс элемента на пустую ячейку
+      tile.addEventListener('dragover', (e) => {
+        e.preventDefault(); 
+      });
+
+      tile.addEventListener('drop', (e) => {
+        e.preventDefault();
+        
+        const draggedIndex = parseInt(e.dataTransfer.getData('text/plain'), 10);
+        
+        
+        const moved = moveTile(boardState, draggedIndex);
+        if (moved) {
+          movesCount++;
+          if (movesCounterElement) {
+            movesCounterElement.textContent = `Moves ${movesCount}`;
+          }
+          renderBoard();
+        }
+      });
+
     } else {
       tile.textContent = value;
       tile.classList.add('App__tile_number');
+      tile.setAttribute('draggable', 'true'); 
+
+      tile.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('text/plain', index);
+        setTimeout(() => {
+          tile.classList.add('App__tile_dragging');
+        }, 0);
+      });
+
+      tile.addEventListener('dragend', () => {
+        tile.classList.remove('App__tile_dragging');
+      });
+
+      tile.addEventListener('click', () => {
+        const moved = moveTile(boardState, index);
+        if (moved) {
+          movesCount++;
+          if (movesCounterElement) {
+            movesCounterElement.textContent = `Moves ${movesCount}`;
+          }
+          renderBoard();
+        }
+      });
     }
 
     mainBoardContainer.appendChild(tile);
