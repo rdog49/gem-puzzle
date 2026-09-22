@@ -33,6 +33,8 @@ document.body.appendChild(mainAppContainer);
 document.body.appendChild(timerMovesPauseContainer);
 document.body.appendChild(mainAppTitle);
 
+
+
 const { moveTile, generateSolvableBoard } = require('./logic.js');
 
 let movesCount = 0;
@@ -41,32 +43,67 @@ const movesCounterElement = appMovesCounter;
 let boardState = generateSolvableBoard(4);
 
 function renderBoard() {
-    mainBoardContainer.innerHTML = '';
+  mainBoardContainer.innerHTML = '';
 
-    boardState.forEach((value, index) => {
-        const tile = document.createElement('div');
-        tile.classList.add('App__tile');
+  boardState.forEach((value, index) => {
+    const tile = document.createElement('div');
+    tile.classList.add('App__tile');
+    
+    if (value === 0) {
+      
+      tile.classList.add('App__tile_empty');
 
-        if (value === 0) {
-            tile.classList.add('App__tile_empty');
-        } else {
-            tile.textContent = value;
-            tile.classList.add('App__tile_number');
+      // Разрешаем сброс элемента на пустую ячейку
+      tile.addEventListener('dragover', (e) => {
+        e.preventDefault(); 
+      });
 
-            tile.addEventListener('click', () => {
-                const moved = moveTile(boardState, index);
-                if (moved) {
-                    movesCount++;
-                    if (movesCounterElement) {
-                        movesCounterElement.textContent = `Moves ${movesCount}`;
-                    }
-                    renderBoard();
-                }
-            });
+      tile.addEventListener('drop', (e) => {
+        e.preventDefault();
+        
+        const draggedIndex = parseInt(e.dataTransfer.getData('text/plain'), 10);
+        
+        
+        const moved = moveTile(boardState, draggedIndex);
+        if (moved) {
+          movesCount++;
+          if (movesCounterElement) {
+            movesCounterElement.textContent = `Moves ${movesCount}`;
+          }
+          renderBoard();
         }
+      });
 
-        mainBoardContainer.appendChild(tile);
-    });
+    } else {
+      tile.textContent = value;
+      tile.classList.add('App__tile_number');
+      tile.setAttribute('draggable', 'true'); 
+
+      tile.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('text/plain', index);
+        setTimeout(() => {
+          tile.classList.add('App__tile_dragging');
+        }, 0);
+      });
+
+      tile.addEventListener('dragend', () => {
+        tile.classList.remove('App__tile_dragging');
+      });
+
+      tile.addEventListener('click', () => {
+        const moved = moveTile(boardState, index);
+        if (moved) {
+          movesCount++;
+          if (movesCounterElement) {
+            movesCounterElement.textContent = `Moves ${movesCount}`;
+          }
+          renderBoard();
+        }
+      });
+    }
+
+    mainBoardContainer.appendChild(tile);
+  });
 }
 
 renderBoard();
