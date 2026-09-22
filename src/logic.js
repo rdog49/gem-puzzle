@@ -90,3 +90,31 @@ function makeMove(arr, row, col) {
     return false;
 }
 
+
+
+function canMove(tileIndex, emptyIndex, gridSize = 4) {
+    const row = Math.floor(tileIndex / gridSize);
+    const col = tileIndex % gridSize;
+    const emptyRow = Math.floor(emptyIndex / gridSize);
+    const emptyCol = emptyIndex % gridSize;
+
+    return (Math.abs(row - emptyRow) + Math.abs(col - emptyCol)) === 1;
+}
+
+
+function moveTile(board, tileIndex) {
+    const emptyIndex = board.indexOf(0);
+
+    if (canMove(tileIndex, emptyIndex)) {
+        [board[emptyIndex], board[tileIndex]] = [board[tileIndex], board[emptyIndex]];
+        return true;
+    }
+    return false;
+}
+
+
+
+module.exports = {
+    canMove,
+    moveTile
+};
