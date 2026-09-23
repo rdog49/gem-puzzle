@@ -1,4 +1,3 @@
-
 body {
   font-family: Arial, sans-serif;
   background-color: #f4f4f9;
@@ -10,6 +9,7 @@ body {
   margin: 0;
 }
 
+/*основные стили*/
 
 .App__main-container {
   display: flex;
@@ -22,17 +22,17 @@ body {
   font-size: 28px;
   color: #333;
   margin-bottom: 20px;
-  order: -2; 
+  order: -2;
 }
 
 
 .Secondary__container {
   display: flex;
-  justify-content: space-between; 
+  justify-content: space-between;
   align-items: center;
-  width: 430px; 
+  width: 430px;
   margin-bottom: 15px;
-  order: -1; 
+  order: -1;
 }
 
 
@@ -43,25 +43,27 @@ body {
   font-weight: 600;
   color: #555;
   margin: 0;
-  cursor: pointer; /* Для логики кнопки в будущем */
+  cursor: pointer;
 }
 
-
 .App__board-container {
+  position: relative;
   width: 430px;
   height: 430px;
   background-color: #8ed790;
   padding: 2px;
-  box-sizing: border-box; 
+  box-sizing: border-box;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(4, 1fr);
-  gap: 2px; 
+  gap: 2px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
+/*стили тайлов*/
+
 .App__tile {
-  background-color: #e0e0e0; 
+  background-color: #e0e0e0;
   display: flex;
   border-radius: 5px;
   border: solid black 1px;
@@ -75,13 +77,12 @@ body {
   transition: background-color 0.15s ease;
 }
 
-
 .App__tile:hover:not(.App__tile_empty) {
-  background-color: #e8d3cb; 
+  background-color: #e8d3cb;
 }
 
 .App__tile:active:not(.App__tile_empty) {
-  background-color: #e8d3cb; 
+  background-color: #e8d3cb;
 }
 
 .App__tile_empty {
@@ -89,4 +90,85 @@ body {
   cursor: default;
   box-shadow: none;
   border: none;
+}
+
+/*стили бургер менюшки*/
+
+.App__modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(22, 22, 22, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+
+.App__modal-overlay_hidden {
+  display: none;
+}
+
+.App__modal-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+  height: 400px;
+}
+
+.App__modal-title {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: normal;
+  color: #ffffff;
+}
+
+.App__modal-btn-save {
+  background: none;
+  border: none;
+  font-size: 20px;
+  font-weight: bold;
+  color: #f7f9f7;
+  cursor: pointer;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+  padding: 0;
+  transition: transform 0.1s ease, color 0.2s ease;
+}
+
+.App__modal-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  font-weight: bold;
+  color: #81ef84;
+  cursor: pointer;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+  padding: 0;
+  transition: transform 0.1s ease, color 0.2s ease;
+}
+
+.App__modal-btn:hover {
+  transform: scale(1.03);
+  text-decoration: underline;
+}
+
+.App__modal-btn:active {
+  transform: scale(0.98);
+  text-decoration: underline;
+}
+
+.App__modal-btn_top {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 2px;
+  margin-bottom: 90px;
+}
+
+.App__modal-btn_top:hover {
+  transform: scale(1.02);
 }
