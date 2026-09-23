@@ -25,9 +25,6 @@ appPauseResumeGame.classList.add('App_pause-resume');
 appPauseResumeGame.textContent = 'Pause game'; // Текст поменять потом
 timerMovesPauseContainer.appendChild(appPauseResumeGame);
 
-
-
-
 const mainBoardContainer = document.createElement('div');
 mainBoardContainer.classList.add('App__board-container');
 mainAppContainer.appendChild(mainBoardContainer); // контейнер для борды
@@ -89,30 +86,94 @@ modalContent.appendChild(btnSettings);
 
 modalOverlay.appendChild(modalContent);
 
-let isPaused = false; // логика бургер менюшки
+// логика вывода бургер менюшки
+
+let isPaused = false; 
 
 function togglePause() {
+  if (!isGameStarted) return; 
+
   isPaused = !isPaused;
   if (isPaused) {
     modalOverlay.classList.remove('App__modal-overlay_hidden');
     appPauseResumeGame.textContent = 'Resume game';
+    stopTimer(); 
   } else {
     modalOverlay.classList.add('App__modal-overlay_hidden');
     appPauseResumeGame.textContent = 'Pause game';
+    startTimer(); 
   }
 }
 
 appPauseResumeGame.addEventListener('click', togglePause);
 
-const { // логика движения тайлов и каунтер
+// логика по началу игры при загрузке страницы
+
+let isGameStarted = false;
+let timerInterval = null;
+let secondsElapsed = 0;
+
+// формат времени
+
+function formatTime(totalSeconds) {
+  const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+  const seconds = (totalSeconds % 60).toString().padStart(2, '0');
+  return 'Time ' + minutes + ':' + seconds;
+}
+
+// старт таймера 
+
+function startTimer() {
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    secondsElapsed++;
+    appTimer.textContent = formatTime(secondsElapsed);
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+}
+
+function resetTimer() {
+  stopTimer();
+  secondsElapsed = 0;
+  appTimer.textContent = 'Time 00:00';
+}
+
+// логика кнопки new game 
+
+function startNewGame() {
+  isGameStarted = true;
+  isPaused = false;
+
+  modalOverlay.classList.add('App__modal-overlay_hidden');
+  appPauseResumeGame.textContent = 'Pause game';
+  appPauseResumeGame.style.opacity = '1';
+  appPauseResumeGame.style.pointerEvents = 'auto';
+
+  movesCount = 0;
+  movesCounterElement.textContent = `Moves ${movesCount}`;
+
+  boardState = generateSolvableBoard(4);
+  renderBoard();
+
+  resetTimer();
+  startTimer();
+}
+
+btnNewGame.addEventListener('click', startNewGame);
+
+// логика движения тайлов и каунтер
+
+const { 
   moveTile,
   generateSolvableBoard
 } = require('./logic.js');
 
+let boardState = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0];
 let movesCount = 0;
 const movesCounterElement = appMovesCounter;
-
-let boardState = generateSolvableBoard(4);
 
 function renderBoard() {
   mainBoardContainer.innerHTML = '';
@@ -189,4 +250,14 @@ function renderBoard() {
   mainBoardContainer.appendChild(modalOverlay);
 }
 
+// стартовое состояние
+
 renderBoard();
+
+modalOverlay.classList.remove('App__modal-overlay_hidden');
+
+appPauseResumeGame.textContent = 'Pause game';
+appPauseResumeGame.style.opacity = '0.5';
+appPauseResumeGame.style.pointerEvents = 'none';
+
+mainBoardContainer.appendChild(modalOverlay);
