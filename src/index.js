@@ -3,6 +3,7 @@ require('./style.css');
 const { initGame } = require('./logic.js');
 
 // шампка & основной контейнер
+
 const mainAppTitle = document.createElement('h1');
 mainAppTitle.textContent = 'Gem-puzzle game!';
 mainAppTitle.classList.add('App__main-title');
@@ -12,6 +13,8 @@ mainAppContainer.classList.add('App__main-container');
 
 const timerMovesPauseContainer = document.createElement('div');
 timerMovesPauseContainer.classList.add('Secondary__container');
+
+// время, шаги и кнопка паузы
 
 const appTimer = document.createElement('h2');
 appTimer.classList.add('App__timer');
@@ -36,7 +39,8 @@ document.body.appendChild(mainAppContainer);
 document.body.appendChild(timerMovesPauseContainer);
 document.body.appendChild(mainAppTitle);
 
-// бургер менюшка
+// структура бургер менюшки
+
 const modalOverlay = document.createElement('div');
 modalOverlay.classList.add('App__modal-overlay', 'App__modal-overlay_hidden');
 
@@ -56,6 +60,8 @@ btnSaveGame.textContent = 'save game';
 
 modalTopBox.appendChild(modalTitle);
 modalTopBox.appendChild(btnSaveGame);
+
+// кнопки бургер менюшки
 
 const btnNewGame = document.createElement('button');
 btnNewGame.classList.add('App__modal-btn');
@@ -116,6 +122,8 @@ function createWinScreenContent(minutes, seconds, movesCount, gridSize) {
 
   return [winTitle, winSubtitle, winDetails];
 }
+
+// универсальная кнопка go back для всех менюшек
 
 const btnGoBack = document.createElement('button');
 btnGoBack.classList.add('App__modal-btn', 'App__modal-btn_hidden'); 

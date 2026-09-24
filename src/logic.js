@@ -18,6 +18,7 @@ function startTimer() {
   timerInterval = setInterval(() => {
     secondsElapsed++;
     elements.appTimer.textContent = formatTime(secondsElapsed);
+    saveCurrentSession();
   }, 1000);
 }
 
@@ -48,6 +49,7 @@ function moveTile(board, tileIndex) {
     return true;
   }
   return false;
+  saveCurrentSession();
 }
 
 function isSolvable(board, gridSize = 4) {
@@ -183,6 +185,7 @@ function togglePause() {
 }
 
 function startNewGame() {
+  localStorage.removeItem('gemPuzzle_currentSession');
   isGameStarted = true;
   isPaused = false;
 
@@ -198,6 +201,7 @@ function startNewGame() {
 
   resetTimer();
   startTimer();
+  saveCurrentSession();
 }
 
 // вин скрин
@@ -205,6 +209,7 @@ function startNewGame() {
 function showWinScreen() {
   stopTimer();
   isGameStarted = false;
+  localStorage.removeItem('gemPuzzle_currentSession');
 
   elements.appPauseResumeGame.textContent = 'Pause game';
   elements.appPauseResumeGame.classList.add('App_pause-resume_disabled');
@@ -267,6 +272,17 @@ function initGame(domElements) {
   elements.modalOverlay.classList.remove('App__modal-overlay_hidden');
   elements.appPauseResumeGame.textContent = 'Pause game';
   elements.appPauseResumeGame.classList.add('App_pause-resume_disabled');
+}
+
+function saveCurrentSession() {
+  const sessionData = {
+    boardState,
+    secondsElapsed,
+    movesCount,
+    gridSize,
+    isGameStarted
+  };
+  localStorage.setItem('gemPuzzle_currentSession', JSON.stringify(sessionData));
 }
 
 module.exports = { initGame, moveTile, generateSolvableBoard, isWinningBoard };
