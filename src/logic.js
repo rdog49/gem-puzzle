@@ -3,7 +3,9 @@ let isGameStarted = false;
 let timerInterval = null;
 let secondsElapsed = 0;
 let gridSize = 4;
-let boardState = Array.from({ length: gridSize * gridSize }, (_, i) => i === gridSize * gridSize - 1 ? 0 : i + 1);
+let boardState = Array.from({
+  length: gridSize * gridSize
+}, (_, i) => i === gridSize * gridSize - 1 ? 0 : i + 1);
 
 let elements = {};
 
@@ -18,6 +20,7 @@ function startTimer() {
   timerInterval = setInterval(() => {
     secondsElapsed++;
     elements.appTimer.textContent = formatTime(secondsElapsed);
+    saveCurrentSession();
   }, 1000);
 }
 
@@ -45,6 +48,7 @@ function moveTile(board, tileIndex) {
 
   if (canMove(tileIndex, emptyIndex)) {
     [board[emptyIndex], board[tileIndex]] = [board[tileIndex], board[emptyIndex]];
+    saveCurrentSession();
     return true;
   }
   return false;
@@ -87,7 +91,9 @@ function generateSolvableBoard(gridSize = 4) {
   let board;
 
   do {
-    board = Array.from({ length: totalTiles }, (_, i) => i);
+    board = Array.from({
+      length: totalTiles
+    }, (_, i) => i);
     for (let i = board.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [board[i], board[j]] = [board[j], board[i]];
@@ -183,6 +189,7 @@ function togglePause() {
 }
 
 function startNewGame() {
+  localStorage.removeItem('gemPuzzle_currentSession');
   isGameStarted = true;
   isPaused = false;
 
@@ -198,6 +205,7 @@ function startNewGame() {
 
   resetTimer();
   startTimer();
+  saveCurrentSession();
 }
 
 // вин скрин
@@ -205,6 +213,7 @@ function startNewGame() {
 function showWinScreen() {
   stopTimer();
   isGameStarted = false;
+  localStorage.removeItem('gemPuzzle_currentSession');
 
   elements.appPauseResumeGame.textContent = 'Pause game';
   elements.appPauseResumeGame.classList.add('App_pause-resume_disabled');
@@ -214,9 +223,9 @@ function showWinScreen() {
   const seconds = (secondsElapsed % 60).toString().padStart(2, '0');
 
   const winElements = elements.createWinScreenContent(
-    minutes, 
-    seconds, 
-    movesCount, 
+    minutes,
+    seconds,
+    movesCount,
     gridSize
   );
 
@@ -234,23 +243,26 @@ function showWinScreen() {
   elements.modalOverlay.classList.remove('App__modal-overlay_hidden');
 }
 
-// Функция возврата в главное меню 
+// Функция возврата в главное меню
+
 function resetToMainMenu() {
 
   elements.modalContent.innerHTML = '';
-  
+
   elements.modalContent.appendChild(elements.modalTopBox);
   elements.modalContent.appendChild(elements.btnNewGame);
   elements.modalContent.appendChild(elements.btnSavedGames);
   elements.modalContent.appendChild(elements.btnBestScores);
   elements.modalContent.appendChild(elements.btnRules);
   elements.modalContent.appendChild(elements.btnSettings);
-  
+
   elements.btnGoBack.classList.add('App__modal-btn_hidden');
 
-  boardState = Array.from({ length: gridSize * gridSize }, (_, i) => i === gridSize * gridSize - 1 ? 0 : i + 1);
+  boardState = Array.from({
+    length: gridSize * gridSize
+  }, (_, i) => i === gridSize * gridSize - 1 ? 0 : i + 1);
   renderBoard();
-  
+
   elements.modalOverlay.classList.remove('App__modal-overlay_hidden');
   elements.appPauseResumeGame.textContent = 'Pause game';
   elements.appPauseResumeGame.classList.add('App_pause-resume_disabled');
@@ -262,11 +274,83 @@ function initGame(domElements) {
   elements.btnNewGame.addEventListener('click', startNewGame);
   elements.appPauseResumeGame.addEventListener('click', togglePause);
 
-  // Стартовое состояние
-  renderBoard();
-  elements.modalOverlay.classList.remove('App__modal-overlay_hidden');
-  elements.appPauseResumeGame.textContent = 'Pause game';
-  elements.appPauseResumeGame.classList.add('App_pause-resume_disabled');
+  const sessionRestored = initSavedSession();
+
+  if (!sessionRestored) {
+    elements.modalContent.innerHTML = '';
+    elements.modalContent.appendChild(elements.modalTopBox);
+    elements.modalContent.appendChild(elements.btnNewGame);
+    elements.modalContent.appendChild(elements.btnSavedGames);
+    elements.modalContent.appendChild(elements.btnBestScores);
+    elements.modalContent.appendChild(elements.btnRules);
+    elements.modalContent.appendChild(elements.btnSettings);
+
+    elements.btnGoBack.classList.add('App__modal-btn_hidden');
+
+    boardState = Array.from({
+      length: gridSize * gridSize
+    }, (_, i) => i === gridSize * gridSize - 1 ? 0 : i + 1);
+    renderBoard();
+
+    elements.modalOverlay.classList.remove('App__modal-overlay_hidden');
+    elements.appPauseResumeGame.textContent = 'Pause game';
+    elements.appPauseResumeGame.classList.add('App_pause-resume_disabled');
+  }
 }
 
-module.exports = { initGame, moveTile, generateSolvableBoard, isWinningBoard };
+function saveCurrentSession() {
+  const sessionData = {
+    boardState,
+    secondsElapsed,
+    movesCount,
+    gridSize,
+    isGameStarted
+  };
+  localStorage.setItem('gemPuzzle_currentSession', JSON.stringify(sessionData));
+}
+
+// восстановление сессии при загрузке страницы
+function initSavedSession() {
+  const savedData = localStorage.getItem('gemPuzzle_currentSession');
+
+  if (!savedData) {
+    return false;
+  }
+
+  try {
+    const session = JSON.parse(savedData);
+
+    if (session.isGameStarted) {
+      boardState = session.boardState;
+      secondsElapsed = session.secondsElapsed;
+      movesCount = session.movesCount;
+      gridSize = session.gridSize || 4;
+      isGameStarted = true;
+
+      elements.appMovesCounter.textContent = `Moves ${movesCount}`;
+      elements.appTimer.textContent = formatTime(secondsElapsed);
+
+      renderBoard();
+
+      startTimer();
+
+      elements.modalOverlay.classList.add('App__modal-overlay_hidden');
+      elements.appPauseResumeGame.textContent = 'Pause game';
+      elements.appPauseResumeGame.classList.remove('App_pause-resume_disabled');
+
+      return true;
+    }
+  } catch (e) {
+    console.error('Ошибка при загрузке сессии:', e);
+    localStorage.removeItem('gemPuzzle_currentSession');
+  }
+
+  return false;
+}
+
+module.exports = {
+  initGame,
+  moveTile,
+  generateSolvableBoard,
+  isWinningBoard
+};
