@@ -1,6 +1,8 @@
 require('./style.css');
 
-const { initGame } = require('./logic.js');
+const {
+  initGame
+} = require('./logic.js');
 
 // шампка & основной контейнер
 
@@ -96,25 +98,25 @@ function createWinScreenContent(minutes, seconds, movesCount, gridSize) {
 
   const winDetails = document.createElement('p');
   winDetails.classList.add('App__modal-text', 'App__modal-text_win-details');
-  
+
   winDetails.textContent = "You won the game in ";
 
   const spanMoves = document.createElement('span');
-  spanMoves.className = 'App__modal-text_highlight'; 
+  spanMoves.className = 'App__modal-text_highlight';
   spanMoves.textContent = movesCount;
   winDetails.appendChild(spanMoves);
 
   winDetails.append(" moves! You've spent ");
 
   const spanTime = document.createElement('span');
-  spanTime.className = 'App__modal-text_highlight'; 
+  spanTime.className = 'App__modal-text_highlight';
   spanTime.textContent = `${minutes} min ${seconds} sec`;
   winDetails.appendChild(spanTime);
 
   winDetails.append(" and you solved ");
 
   const spanGrid = document.createElement('span');
-  spanGrid.className = 'App__modal-text_highlight'; 
+  spanGrid.className = 'App__modal-text_highlight';
   spanGrid.textContent = `${gridSize}x${gridSize}`;
   winDetails.appendChild(spanGrid);
 
@@ -126,9 +128,9 @@ function createWinScreenContent(minutes, seconds, movesCount, gridSize) {
 // универсальная кнопка go back для всех менюшек
 
 const btnGoBack = document.createElement('button');
-btnGoBack.classList.add('App__modal-btn', 'App__modal-btn_hidden'); 
+btnGoBack.classList.add('App__modal-btn', 'App__modal-btn_hidden');
 btnGoBack.textContent = 'go back';
-  
+
 
 modalContent.appendChild(modalTopBox);
 modalContent.appendChild(btnNewGame);
@@ -136,7 +138,6 @@ modalContent.appendChild(btnSavedGames);
 modalContent.appendChild(btnBestScores);
 modalContent.appendChild(btnRules);
 modalContent.appendChild(btnSettings);
-modalContent.appendChild(btnGoBack);
 
 modalOverlay.appendChild(modalContent);
 mainBoardContainer.appendChild(modalOverlay);
