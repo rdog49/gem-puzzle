@@ -175,20 +175,20 @@ body {
 
 /*стили победной менюшки*/
 
-.App__modal-text_win-title{
+.App__modal-text_win-title {
   color: #81ef84;
   font-weight: 800;
   font-size: 24px;
   margin-top: 120px;
 }
 
-.App__modal-text_win-subtitle{
+.App__modal-text_win-subtitle {
   color: #81ef84;
   margin-bottom: 2px;
   font-weight: 600;
 }
 
-.App__modal-text_win-details{
+.App__modal-text_win-details {
   color: #81ef84;
   margin-top: 0;
   padding: 0 40px 0 40px;
@@ -199,4 +199,55 @@ body {
 .App__modal-text_highlight {
   color: #ffffff !important;
   font-weight: bold;
+}
+
+/* Адаптив */
+
+@media (max-width: 460px) {
+  .Secondary__container {
+    width: 300px;
+  }
+
+  .App__timer,
+  .App__moves-counter,
+  .App_pause-resume {
+    font-size: 14px;
+  }
+
+  .App__board-container {
+    width: 300px;
+    height: 300px;
+  }
+
+  .App__tile {
+    font-size: 22px;
+  }
+
+  .App__modal-text_win-title {
+    margin-top: 50px;
+    font-size: 20px;
+  }
+
+  .App__modal-text_win-details {
+    padding: 0 15px;
+    font-size: 14px;
+  }
+
+  .App__modal-btn_top {
+    margin-bottom: 20px;
+  }
+
+  .App__modal-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    text-align: center;
+    height: 300px;
+  }
+  
+  .App__modal-title{
+    margin-top: 10px;
+  }
+
 }
