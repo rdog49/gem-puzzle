@@ -3,6 +3,7 @@ let isGameStarted = false;
 let timerInterval = null;
 let secondsElapsed = 0;
 let gridSize = 4;
+let pendingGridSize = 4;
 let boardState = Array.from({
   length: gridSize * gridSize
 }, (_, i) => i === gridSize * gridSize - 1 ? 0 : i + 1);
@@ -34,11 +35,11 @@ function resetTimer() {
   elements.appTimer.textContent = 'Time 00:00';
 }
 
-function canMove(tileIndex, emptyIndex, gridSize = 4) {
-  const row = Math.floor(tileIndex / gridSize);
-  const col = tileIndex % gridSize;
-  const emptyRow = Math.floor(emptyIndex / gridSize);
-  const emptyCol = emptyIndex % gridSize;
+function canMove(tileIndex, emptyIndex, currentGridSize = gridSize) {
+  const row = Math.floor(tileIndex / currentGridSize);
+  const col = tileIndex % currentGridSize;
+  const emptyRow = Math.floor(emptyIndex / currentGridSize);
+  const emptyCol = emptyIndex % currentGridSize;
 
   return (Math.abs(row - emptyRow) + Math.abs(col - emptyCol)) === 1;
 }
@@ -46,7 +47,7 @@ function canMove(tileIndex, emptyIndex, gridSize = 4) {
 function moveTile(board, tileIndex) {
   const emptyIndex = board.indexOf(0);
 
-  if (canMove(tileIndex, emptyIndex)) {
+  if (canMove(tileIndex, emptyIndex, gridSize)) {
     [board[emptyIndex], board[tileIndex]] = [board[tileIndex], board[emptyIndex]];
     saveCurrentSession();
     return true;
@@ -106,9 +107,19 @@ function generateSolvableBoard(gridSize = 4) {
 function renderBoard() {
   elements.mainBoardContainer.innerHTML = '';
 
+  elements.mainBoardContainer.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+  elements.mainBoardContainer.style.gridTemplateRows = `repeat(${gridSize}, 1fr)`;
+
+let fontSize = '32px';
+  if (gridSize === 5) fontSize = '26px';
+  if (gridSize === 6) fontSize = '22px';
+  if (gridSize === 7) fontSize = '18px';
+  if (gridSize === 8) fontSize = '15px';
+
   boardState.forEach((value, index) => {
     const tile = document.createElement('div');
     tile.classList.add('App__tile');
+    tile.style.fontSize = fontSize;
 
     if (value === 0) {
       tile.classList.add('App__tile_empty');
@@ -189,6 +200,8 @@ function togglePause() {
 }
 
 function startNewGame() {
+  gridSize = pendingGridSize;
+
   localStorage.removeItem('gemPuzzle_currentSession');
   isGameStarted = true;
   isPaused = false;
@@ -271,8 +284,20 @@ function resetToMainMenu() {
 function initGame(domElements) {
   elements = domElements;
 
+  const savedPendingSize = localStorage.getItem('gemPuzzle_pendingGridSize');
+  if (savedPendingSize) {
+    pendingGridSize = parseInt(savedPendingSize, 10);
+  }
+
   elements.btnNewGame.addEventListener('click', startNewGame);
   elements.appPauseResumeGame.addEventListener('click', togglePause);
+  elements.btnSettings.addEventListener('click', showSettingsScreen);
+
+  elements.selectSize.addEventListener('change', (e) => {
+    pendingGridSize = parseInt(e.target.value, 10);
+    elements.settingsMessage.style.display = 'block'; 
+    localStorage.setItem('gemPuzzle_pendingGridSize', pendingGridSize);
+  });
 
   const sessionRestored = initSavedSession();
 
@@ -309,7 +334,6 @@ function saveCurrentSession() {
   localStorage.setItem('gemPuzzle_currentSession', JSON.stringify(sessionData));
 }
 
-// восстановление сессии при загрузке страницы
 function initSavedSession() {
   const savedData = localStorage.getItem('gemPuzzle_currentSession');
 
@@ -346,6 +370,24 @@ function initSavedSession() {
   }
 
   return false;
+}
+
+function showSettingsScreen() {
+  elements.modalContent.innerHTML = '';
+
+  elements.selectSize.value = pendingGridSize.toString();
+  elements.settingsMessage.style.display = 'none'; 
+
+  elements.modalContent.appendChild(elements.settingsTitle);
+  elements.modalContent.appendChild(elements.fieldSizeLabel);
+  elements.modalContent.appendChild(elements.selectSize);
+  elements.modalContent.appendChild(elements.settingsMessage);
+  elements.modalContent.appendChild(elements.btnGoBack);
+
+  elements.btnGoBack.classList.remove('App__modal-btn_hidden');
+  elements.btnGoBack.onclick = () => {
+    resetToMainMenu();
+  };
 }
 
 module.exports = {
