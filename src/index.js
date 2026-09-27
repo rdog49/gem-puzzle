@@ -128,8 +128,32 @@ function createWinScreenContent(minutes, seconds, movesCount, gridSize) {
 // универсальная кнопка go back для всех менюшек
 
 const btnGoBack = document.createElement('button');
-btnGoBack.classList.add('App__modal-btn', 'App__modal-btn_hidden');
+btnGoBack.classList.add('App__modal-btn', 'App__modal-btn_hidden', 'App__modal-btn-back');
 btnGoBack.textContent = 'go back';
+
+// менюшка Settings
+const settingsTitle = document.createElement('h2');
+settingsTitle.classList.add('App__modal-title', 'App__modal-text_win-title');
+settingsTitle.textContent = 'Settings';
+
+const fieldSizeLabel = document.createElement('p');
+fieldSizeLabel.classList.add('App__modal-text', 'App__modal-text_win-subtitle');
+fieldSizeLabel.textContent = 'Field size:';
+
+const selectSize = document.createElement('select');
+selectSize.classList.add('App__modal-select');
+
+['3x3', '4x4', '5x5', '6x6', '7x7', '8x8'].forEach(sizeStr => {
+  const option = document.createElement('option');
+  option.value = sizeStr[0]; // берём число 3, 4, 5, 6, 7 или 8
+  option.textContent = sizeStr;
+  if (sizeStr === '4x4') option.selected = true;
+  selectSize.appendChild(option);
+});
+
+const settingsMessage = document.createElement('p');
+settingsMessage.classList.add('App__modal-text', 'App__modal-text_settings-msg', 'App__modal-btn_hidden');
+settingsMessage.innerHTML = 'Changes saved! <br> Start new game to get new field size';
 
 
 modalContent.appendChild(modalTopBox);
@@ -158,5 +182,9 @@ initGame({
   btnRules,
   btnSettings,
   btnGoBack,
-  createWinScreenContent
+  createWinScreenContent,
+  settingsTitle,
+  fieldSizeLabel,
+  selectSize,
+  settingsMessage
 });
