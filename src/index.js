@@ -145,7 +145,7 @@ selectSize.classList.add('App__modal-select');
 
 ['3x3', '4x4', '5x5', '6x6', '7x7', '8x8'].forEach(sizeStr => {
   const option = document.createElement('option');
-  option.value = sizeStr[0]; // берём число 3, 4, 5, 6, 7 или 8
+  option.value = sizeStr[0]; 
   option.textContent = sizeStr;
   if (sizeStr === '4x4') option.selected = true;
   selectSize.appendChild(option);
@@ -154,6 +154,8 @@ selectSize.classList.add('App__modal-select');
 const settingsMessage = document.createElement('p');
 settingsMessage.classList.add('App__modal-text', 'App__modal-text_settings-msg', 'App__modal-btn_hidden');
 settingsMessage.innerHTML = 'Changes saved! <br> Start new game to get new field size';
+
+
 
 
 modalContent.appendChild(modalTopBox);
@@ -186,5 +188,4 @@ initGame({
   settingsTitle,
   fieldSizeLabel,
   selectSize,
-  settingsMessage
 });

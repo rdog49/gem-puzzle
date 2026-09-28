@@ -2,6 +2,7 @@ let isPaused = false;
 let isGameStarted = false;
 let timerInterval = null;
 let secondsElapsed = 0;
+let movesCount = 0;
 let gridSize = 4;
 let pendingGridSize = 4;
 let boardState = Array.from({
@@ -104,6 +105,17 @@ function generateSolvableBoard(gridSize = 4) {
   return board;
 }
 
+function renderMainMenu() {
+  elements.modalContent.innerHTML = '';
+  elements.modalContent.appendChild(elements.modalTopBox);
+  elements.modalContent.appendChild(elements.btnNewGame);
+  elements.modalContent.appendChild(elements.btnSavedGames);
+  elements.modalContent.appendChild(elements.btnBestScores);
+  elements.modalContent.appendChild(elements.btnRules);
+  elements.modalContent.appendChild(elements.btnSettings);
+  elements.btnGoBack.classList.add('App__modal-btn_hidden');
+}
+
 function renderBoard() {
   elements.mainBoardContainer.innerHTML = '';
 
@@ -184,21 +196,6 @@ let fontSize = '32px';
   elements.mainBoardContainer.appendChild(elements.modalOverlay);
 }
 
-function togglePause() {
-  if (!isGameStarted) return;
-
-  isPaused = !isPaused;
-  if (isPaused) {
-    elements.modalOverlay.classList.remove('App__modal-overlay_hidden');
-    elements.appPauseResumeGame.textContent = 'Resume game';
-    stopTimer();
-  } else {
-    elements.modalOverlay.classList.add('App__modal-overlay_hidden');
-    elements.appPauseResumeGame.textContent = 'Pause game';
-    startTimer();
-  }
-}
-
 function startNewGame() {
   gridSize = pendingGridSize;
 
@@ -259,17 +256,7 @@ function showWinScreen() {
 // Функция возврата в главное меню
 
 function resetToMainMenu() {
-
-  elements.modalContent.innerHTML = '';
-
-  elements.modalContent.appendChild(elements.modalTopBox);
-  elements.modalContent.appendChild(elements.btnNewGame);
-  elements.modalContent.appendChild(elements.btnSavedGames);
-  elements.modalContent.appendChild(elements.btnBestScores);
-  elements.modalContent.appendChild(elements.btnRules);
-  elements.modalContent.appendChild(elements.btnSettings);
-
-  elements.btnGoBack.classList.add('App__modal-btn_hidden');
+  renderMainMenu();
 
   boardState = Array.from({
     length: gridSize * gridSize
@@ -292,6 +279,10 @@ function initGame(domElements) {
   elements.btnNewGame.addEventListener('click', startNewGame);
   elements.appPauseResumeGame.addEventListener('click', togglePause);
   elements.btnSettings.addEventListener('click', showSettingsScreen);
+  elements.btnSavedGames.addEventListener('click', showSavedGamesScreen);
+  if (elements.btnSaveGame) {
+    elements.btnSaveGame.addEventListener('click', saveGameToStorage);
+  }
 
   elements.selectSize.addEventListener('change', (e) => {
     pendingGridSize = parseInt(e.target.value, 10);
@@ -372,11 +363,12 @@ function initSavedSession() {
   return false;
 }
 
+// логика сохранения и экран
 function showSettingsScreen() {
   elements.modalContent.innerHTML = '';
-
   elements.selectSize.value = pendingGridSize.toString();
-  elements.settingsMessage.style.display = 'none'; 
+
+  elements.settingsMessage.classList.add('App__modal-btn_hidden');
 
   elements.modalContent.appendChild(elements.settingsTitle);
   elements.modalContent.appendChild(elements.fieldSizeLabel);
@@ -386,8 +378,132 @@ function showSettingsScreen() {
 
   elements.btnGoBack.classList.remove('App__modal-btn_hidden');
   elements.btnGoBack.onclick = () => {
-    resetToMainMenu();
+    if (isPaused) {
+      renderMainMenu();
+    } else {
+      resetToMainMenu();
+    }
   };
+}
+
+function togglePause() {
+  if (!isGameStarted) return;
+
+  isPaused = !isPaused;
+  if (isPaused) {
+    stopTimer();
+    renderMainMenu();
+    elements.modalOverlay.classList.remove('App__modal-overlay_hidden');
+    elements.appPauseResumeGame.textContent = 'Resume game';
+  } else {
+    elements.modalOverlay.classList.add('App__modal-overlay_hidden');
+    elements.appPauseResumeGame.textContent = 'Pause game';
+    startTimer();
+  }
+}
+
+function saveGameToStorage() {
+  if (!isGameStarted) return;
+
+  const savedGames = JSON.parse(localStorage.getItem('gemPuzzle_savedGames') || '[]');
+
+  const newSave = {
+    id: Date.now(),
+    boardState: [...boardState],
+    secondsElapsed,
+    movesCount,
+    gridSize
+  };
+
+  savedGames.unshift(newSave);
+  if (savedGames.length > 10) {
+    savedGames.pop();
+  }
+
+  localStorage.setItem('gemPuzzle_savedGames', JSON.stringify(savedGames));
+
+  elements.btnSaveGame.textContent = 'Saved!';
+  setTimeout(() => {
+    elements.btnSaveGame.textContent = 'save game';
+  }, 1500);
+}
+
+function deleteSavedGame(id) {
+  let savedGames = JSON.parse(localStorage.getItem('gemPuzzle_savedGames') || '[]');
+  savedGames = savedGames.filter(save => save.id !== id);
+  localStorage.setItem('gemPuzzle_savedGames', JSON.stringify(savedGames));
+  showSavedGamesScreen();
+}
+
+function showSavedGamesScreen() {
+  elements.modalContent.innerHTML = '';
+  elements.modalContent.appendChild(elements.savedGamesTitle);
+
+  const savedGames = JSON.parse(localStorage.getItem('gemPuzzle_savedGames') || '[]');
+
+  if (savedGames.length === 0) {
+    const emptyMsg = document.createElement('p');
+    emptyMsg.classList.add('App__modal-text');
+    emptyMsg.textContent = 'No saved games yet';
+    elements.modalContent.appendChild(emptyMsg);
+  } else {
+    const list = document.createElement('div');
+    list.classList.add('App__saved-list');
+
+    savedGames.forEach((save, index) => {
+      const mins = Math.floor(save.secondsElapsed / 60).toString().padStart(2, '0');
+      const secs = (save.secondsElapsed % 60).toString().padStart(2, '0');
+      const text = (index + 1) + '. [' + save.gridSize + 'x' + save.gridSize + '] Time ' + mins + ':' + secs + ' | Moves:  ' + save.movesCount;
+
+      const { row, item, btnDelete } = elements.createSavedGameRow(text);
+
+      item.onclick = () => {
+        loadSavedGame(save);
+      };
+
+      btnDelete.onclick = (e) => {
+        e.stopPropagation();
+        deleteSavedGame(save.id);
+      };
+
+      list.appendChild(row);
+    });
+
+    elements.modalContent.appendChild(list);
+  }
+
+  elements.modalContent.appendChild(elements.btnGoBack);
+  elements.btnGoBack.classList.remove('App__modal-btn_hidden');
+  elements.btnGoBack.onclick = () => {
+    if (isPaused) {
+      renderMainMenu();
+    } else {
+      resetToMainMenu();
+    }
+  };
+}
+
+function loadSavedGame(save) {
+  boardState = [...save.boardState];
+  secondsElapsed = save.secondsElapsed;
+  movesCount = save.movesCount;
+  gridSize = save.gridSize;
+  isGameStarted = true;
+  isPaused = false;
+
+  elements.appMovesCounter.textContent = `Moves`+ movesCount;
+  elements.appTimer.textContent = formatTime(secondsElapsed);
+
+  renderBoard();
+
+  stopTimer();
+  startTimer();
+
+  elements.modalOverlay.classList.add('App__modal-overlay_hidden');
+  elements.appPauseResumeGame.textContent = 'Pause game';
+  elements.appPauseResumeGame.classList.remove('App_pause-resume_disabled');
+
+  saveCurrentSession();
 }
 
 module.exports = {

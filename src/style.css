@@ -275,5 +275,9 @@ body {
   .App__modal-title{
     margin-top: 10px;
   }
+  
+  .App__modal-btn-back{
+    margin-top: 10px;
+  }
 
 }
