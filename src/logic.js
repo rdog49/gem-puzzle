@@ -6,6 +6,8 @@ let movesCount = 0;
 let gridSize = 4;
 let pendingGridSize = 4;
 let isAnimating = false;
+let currentGameMode = 'image'; // 'image' or 'numbers'
+let currentImageUrl = 'https://picsum.photos/id/10/512/512'; // тестовая картинка на время разработки
 let boardState = Array.from({
   length: gridSize * gridSize
 }, (_, i) => i === gridSize * gridSize - 1 ? 0 : i + 1);
@@ -251,6 +253,20 @@ function renderBoard() {
       tile.textContent = value;
       tile.classList.add('App__tile_number');
       tile.setAttribute('draggable', 'true');
+
+      if (currentGameMode === 'image' && currentImageUrl) {
+        tile.classList.add('App__tile_image');
+        tile.style.backgroundImage = `url(${currentImageUrl})`;
+        tile.style.backgroundSize = `${gridSize * 100}% ${gridSize * 100}%`;
+
+        const targetRow = Math.floor((value - 1) / gridSize);
+        const targetCol = (value - 1) % gridSize;
+
+        const posX = (targetCol / (gridSize - 1)) * 100;
+        const posY = (targetRow / (gridSize - 1)) * 100;
+
+        tile.style.backgroundPosition = `${posX}% ${posY}%`;
+      }
 
       tile.addEventListener('dragstart', (e) => {
         if (isPaused) {

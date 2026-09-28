@@ -317,6 +317,13 @@ body {
   z-index: 10;
 }
 
+/* стили для тайлов в режиме картинок */
+.App__tile_image {
+  background-repeat: no-repeat;
+  color: transparent !important;
+  text-shadow: none !important;
+}
+
 /* Адаптив */
 
 @media (max-width: 460px) {
