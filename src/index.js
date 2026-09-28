@@ -145,7 +145,7 @@ selectSize.classList.add('App__modal-select');
 
 ['3x3', '4x4', '5x5', '6x6', '7x7', '8x8'].forEach(sizeStr => {
   const option = document.createElement('option');
-  option.value = sizeStr[0]; // берём число 3, 4, 5, 6, 7 или 8
+  option.value = sizeStr[0]; 
   option.textContent = sizeStr;
   if (sizeStr === '4x4') option.selected = true;
   selectSize.appendChild(option);
@@ -155,6 +155,33 @@ const settingsMessage = document.createElement('p');
 settingsMessage.classList.add('App__modal-text', 'App__modal-text_settings-msg', 'App__modal-btn_hidden');
 settingsMessage.innerHTML = 'Changes saved! <br> Start new game to get new field size';
 
+const pauseText = document.createElement('p');
+pauseText.classList.add('App__modal-text');
+pauseText.textContent = 'game paused, want to save it?';
+
+const savedGamesTitle = document.createElement('p');
+savedGamesTitle.classList.add('App__modal-text', 'App__modal-text_win-subtitle');
+savedGamesTitle.textContent = 'your saved games:';
+
+function createSavedGameRow(text) {
+  const row = document.createElement('div');
+  row.classList.add('App__saved-row');
+
+  const item = document.createElement('button');
+  item.classList.add('App__saved-item');
+  item.textContent = text;
+
+  const btnDelete = document.createElement('button');
+  btnDelete.classList.add('App__saved-delete-btn');
+  btnDelete.textContent = '✕';
+
+  row.appendChild(item);
+  row.appendChild(btnDelete);
+
+  return { row, item, btnDelete };
+}
+
+modalContent.appendChild(modalTopBox);
 
 modalContent.appendChild(modalTopBox);
 modalContent.appendChild(btnNewGame);
@@ -186,5 +213,8 @@ initGame({
   settingsTitle,
   fieldSizeLabel,
   selectSize,
-  settingsMessage
+  settingsMessage,
+  savedGamesTitle,
+  pauseText,
+  createSavedGameRow
 });

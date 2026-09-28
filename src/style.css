@@ -227,6 +227,51 @@ body {
   margin: 5px 0 10px 0;
 }
 
+/* меню сохраненний */
+.App__saved-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.App__saved-item {
+  background: none;
+  border: 1px solid #81ef84;
+  color: #81ef84;
+  padding: 8px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.App__saved-item:hover {
+  background-color: rgba(129, 239, 132, 0.2);
+}
+
+.App__saved-delete-btn {
+  background: none;
+  border: none;
+  color: #81ef84;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0 4px;
+  margin-left: 8px;
+  transition: color 0.2s;
+}
+
+.App__saved-delete-btn:hover {
+  color: #ff2222;
+}
+
+.App__modal-content{
+  color: #81ef84;
+}
+
 /* Адаптив */
 
 @media (max-width: 460px) {
@@ -273,6 +318,10 @@ body {
   }
   
   .App__modal-title{
+    margin-top: 10px;
+  }
+  
+  .App__modal-btn-back{
     margin-top: 10px;
   }
 
