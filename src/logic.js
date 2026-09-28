@@ -224,6 +224,7 @@ function showWinScreen() {
   stopTimer();
   isGameStarted = false;
   localStorage.removeItem('gemPuzzle_currentSession');
+  saveBestScore(gridSize, secondsElapsed, movesCount);
 
   elements.appPauseResumeGame.textContent = 'Pause game';
   elements.appPauseResumeGame.classList.add('App_pause-resume_disabled');
@@ -280,6 +281,7 @@ function initGame(domElements) {
   elements.appPauseResumeGame.addEventListener('click', togglePause);
   elements.btnSettings.addEventListener('click', showSettingsScreen);
   elements.btnSavedGames.addEventListener('click', showSavedGamesScreen);
+  elements.btnBestScores.addEventListener('click', showBestScoresScreen);
   if (elements.btnSaveGame) {
     elements.btnSaveGame.addEventListener('click', saveGameToStorage);
   }
@@ -504,6 +506,70 @@ function loadSavedGame(save) {
   elements.appPauseResumeGame.classList.remove('App_pause-resume_disabled');
 
   saveCurrentSession();
+}
+
+function saveBestScore(gridSize, secondsElapsed, movesCount) {
+  const scores = JSON.parse(localStorage.getItem('gemPuzzle_bestScores') || '[]');
+
+  scores.push({
+    gridSize,
+    secondsElapsed,
+    movesCount,
+    id: Date.now()
+  });
+
+  scores.sort((a, b) => a.movesCount - b.movesCount || a.secondsElapsed - b.secondsElapsed);
+
+  const top10 = scores.slice(0, 10);
+  localStorage.setItem('gemPuzzle_bestScores', JSON.stringify(top10));
+}
+
+function showBestScoresScreen() {
+  elements.modalContent.innerHTML = '';
+
+  const title = document.createElement('p');
+  title.classList.add('App__modal-text', 'App__modal-text_win-subtitle');
+  title.textContent = 'Top 10 Best Scores:';
+  elements.modalContent.appendChild(title);
+
+  const scores = JSON.parse(localStorage.getItem('gemPuzzle_bestScores') || '[]');
+
+  if (scores.length === 0) {
+    const emptyMsg = document.createElement('p');
+    emptyMsg.classList.add('App__modal-text');
+    emptyMsg.textContent = 'No records yet. Win a game!';
+    elements.modalContent.appendChild(emptyMsg);
+  } else {
+    const list = document.createElement('div');
+    list.classList.add('App__scores-list');
+
+    scores.forEach((score, index) => {
+      const mins = Math.floor(score.secondsElapsed / 60).toString().padStart(2, '0');
+      const secs = (score.secondsElapsed % 60).toString().padStart(2, '0');
+      const timeStr = `${mins}:${secs}`;
+
+      const scoreRow = elements.createBestScoreRow(
+        index + 1,
+        score.gridSize,
+        timeStr,
+        score.movesCount
+      );
+
+      list.appendChild(scoreRow);
+    });
+
+    elements.modalContent.appendChild(list);
+  }
+
+  elements.modalContent.appendChild(elements.btnGoBack);
+  elements.btnGoBack.classList.remove('App__modal-btn_hidden');
+  elements.btnGoBack.onclick = () => {
+    if (isPaused) {
+      renderMainMenu();
+    } else {
+      resetToMainMenu();
+    }
+  };
 }
 
 module.exports = {
