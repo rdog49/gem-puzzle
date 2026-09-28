@@ -176,13 +176,17 @@ body {
   transform: scale(1.02);
 }
 
+.App__modal-btn_hidden {
+  display: none !important;
+}
+
 /*стили победной менюшки*/
 
 .App__modal-text_win-title {
   color: #81ef84;
   font-weight: 800;
   font-size: 24px;
-  margin-top: 120px;
+  margin-top: 60px;
 }
 
 .App__modal-text_win-subtitle {
@@ -225,6 +229,33 @@ body {
   font-weight: 600;
   line-height: 1.3;
   margin: 5px 0 10px 0;
+}
+
+.App__settings-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 24px;
+  width: 100%;
+  margin: 10px 0;
+}
+
+.App__settings-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.App__settings-group .App__modal-text {
+  margin: 0;
+  font-size: 15px;
+}
+
+.App__modal-content {
+  padding: 20px;
+  max-width: 420px;
+  width: 90%;
 }
 
 /* меню сохраненний */
@@ -317,6 +348,61 @@ body {
   z-index: 10;
 }
 
+/* стили для тайлов в режиме картинок */
+.App__tile_image {
+  background-repeat: no-repeat;
+  color: transparent !important;
+  text-shadow: none !important;
+}
+
+/* Переключатель режима и превью картинки в Settings */
+.App__mode-toggle {
+  display: flex;
+  gap: 12px;
+  margin: 8px 0;
+  justify-content: center;
+}
+
+.App__mode-btn {
+  padding: 6px 14px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  color: #fff;
+  cursor: pointer;
+}
+
+.App__mode-btn_active {
+  background: #2eb85c;
+  border-color: #2eb85c;
+}
+
+.App__previews-container {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin: 10px 0;
+  min-height: 60px;
+}
+
+.App__preview-img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.App__preview-img:hover {
+  transform: scale(1.05);
+}
+
+.App__preview-img_selected {
+  border-color: #2eb85c;
+}
+
 /* Адаптив */
 
 @media (max-width: 460px) {
@@ -340,8 +426,9 @@ body {
   }
 
   .App__modal-text_win-title {
-    margin-top: 50px;
+    margin-top: 10px;
     font-size: 20px;
+    font-size: 15px;
   }
 
   .App__modal-text_win-details {
@@ -367,7 +454,20 @@ body {
   }
   
   .App__modal-btn-back{
-    margin-top: 10px;
+    margin-top: -15px;
+  }
+
+  .App__preview-img{
+    width: 40px;
+    height: 40px;
+  }
+
+  .App__modal-text_settings-msg{
+    margin: -30px 0 10px 0;
+  }
+  .Rules__text{
+    padding: 0 10px;
+    font-size: 14px;
   }
 
 }

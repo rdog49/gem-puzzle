@@ -159,7 +159,7 @@ selectSize.classList.add('App__modal-select');
 
 const settingsMessage = document.createElement('p');
 settingsMessage.classList.add('App__modal-text', 'App__modal-text_settings-msg', 'App__modal-btn_hidden');
-settingsMessage.innerHTML = 'Changes saved! <br> Start new game to get new field size';
+settingsMessage.innerHTML = 'Changes saved! <br> press go back and start new game to see the changes.';
 
 const pauseText = document.createElement('p');
 pauseText.classList.add('App__modal-text');
@@ -207,6 +207,47 @@ const rulesText = document.createElement('p');
 rulesText.classList.add('Rules__text');
 rulesText.textContent = 'The object of the puzzle is to place the tiles in order by making sliding moves that use the empty space. You can save your game and load it later. Or you can just use pause button. Also you can choose game field size in Settings. Sound can be turned on/off in Pause menu.';
 
+// Элементы выбора режима игры
+const modeLabel = document.createElement('p');
+modeLabel.classList.add('App__modal-text');
+modeLabel.textContent = 'Game Mode:';
+
+const modeToggleBox = document.createElement('div');
+modeToggleBox.classList.add('App__mode-toggle');
+
+const btnModeNumbers = document.createElement('button');
+btnModeNumbers.classList.add('App__mode-btn', 'App__mode-btn_active');
+btnModeNumbers.textContent = 'Numbers';
+
+const btnModeImage = document.createElement('button');
+btnModeImage.classList.add('App__mode-btn');
+btnModeImage.textContent = 'Picture';
+
+modeToggleBox.appendChild(btnModeNumbers);
+modeToggleBox.appendChild(btnModeImage);
+
+const previewsContainer = document.createElement('div');
+previewsContainer.classList.add('App__previews-container');
+
+// Обертка для всех настроек в ряд
+const settingsRow = document.createElement('div');
+settingsRow.classList.add('App__settings-row');
+
+// Группа 1: Размер поля
+const settingsGroupSize = document.createElement('div');
+settingsGroupSize.classList.add('App__settings-group');
+settingsGroupSize.appendChild(fieldSizeLabel);
+settingsGroupSize.appendChild(selectSize);
+
+// Группа 2: Режим игры
+const settingsGroupMode = document.createElement('div');
+settingsGroupMode.classList.add('App__settings-group');
+settingsGroupMode.appendChild(modeLabel);
+settingsGroupMode.appendChild(modeToggleBox);
+
+settingsRow.appendChild(settingsGroupSize);
+settingsRow.appendChild(settingsGroupMode);
+
 modalContent.appendChild(modalTopBox);
 
 modalContent.appendChild(modalTopBox);
@@ -247,5 +288,11 @@ initGame({
   createBestScoreRow,
   rulesTitle,
   rulesText,
-  btnSound
+  btnSound,
+  modeLabel,
+  modeToggleBox,
+  btnModeNumbers,
+  btnModeImage,
+  previewsContainer,
+  settingsRow
 });
