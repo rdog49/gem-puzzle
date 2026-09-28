@@ -85,6 +85,12 @@ const btnSettings = document.createElement('button');
 btnSettings.classList.add('App__modal-btn');
 btnSettings.textContent = 'Settings';
 
+// кнопка звука
+
+const btnSound = document.createElement('button');
+btnSound.classList.add('App__modal-btn', 'App__modal-btn_sound-on');
+btnSound.textContent = 'sound';
+
 // победный экран
 
 function createWinScreenContent(minutes, seconds, movesCount, gridSize) {
@@ -209,6 +215,7 @@ modalContent.appendChild(btnSavedGames);
 modalContent.appendChild(btnBestScores);
 modalContent.appendChild(btnRules);
 modalContent.appendChild(btnSettings);
+modalContent.appendChild(btnSound);
 
 modalOverlay.appendChild(modalContent);
 mainBoardContainer.appendChild(modalOverlay);
@@ -239,5 +246,6 @@ initGame({
   createSavedGameRow,
   createBestScoreRow,
   rulesTitle,
-  rulesText
+  rulesText,
+  btnSound
 });

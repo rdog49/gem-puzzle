@@ -334,7 +334,7 @@ function initGame(domElements) {
   elements.btnSettings.addEventListener('click', showSettingsScreen);
   elements.btnSavedGames.addEventListener('click', showSavedGamesScreen);
   elements.btnBestScores.addEventListener('click', showBestScoresScreen);
-  elements.btnRules.addEventListener('click', showRulesScreen);a
+  elements.btnRules.addEventListener('click', showRulesScreen);
   elements.btnSound.addEventListener('click', toggleSound);
   if (elements.btnSaveGame) {
     elements.btnSaveGame.addEventListener('click', saveGameToStorage);
