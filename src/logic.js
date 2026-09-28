@@ -6,8 +6,10 @@ let movesCount = 0;
 let gridSize = 4;
 let pendingGridSize = 4;
 let isAnimating = false;
-let currentGameMode = 'image'; // 'image' or 'numbers'
-let currentImageUrl = 'https://picsum.photos/id/10/512/512'; // тестовая картинка на время разработки
+let currentImageId = '10';
+let previewsList = [];
+let currentGameMode = 'numbers'; // 'image' or 'numbers'
+let currentImageUrl = 'https://picsum.photos/id/10/512/512'; 
 let boardState = Array.from({
   length: gridSize * gridSize
 }, (_, i) => i === gridSize * gridSize - 1 ? 0 : i + 1);
@@ -241,7 +243,7 @@ function renderBoard() {
         const moved = moveTile(boardState, draggedIndex);
         if (moved) {
           movesCount++;
-          elements.appMovesCounter.textContent = `Moves ${movesCount}`;
+          elements.appMovesCounter.textContent = `Moves  ${movesCount}`;
           renderBoard();
 
           if (isWinningBoard(boardState)) {
@@ -306,7 +308,7 @@ function startNewGame() {
   elements.appPauseResumeGame.classList.remove('App_pause-resume_disabled');
 
   movesCount = 0;
-  elements.appMovesCounter.textContent = `Moves ${movesCount}`;
+  elements.appMovesCounter.textContent = `Moves  ${movesCount}`;
 
   boardState = generateSolvableBoard(gridSize);
   renderBoard();
@@ -392,9 +394,29 @@ function initGame(domElements) {
     elements.btnSaveGame.addEventListener('click', saveGameToStorage);
   }
 
+  elements.btnModeNumbers.onclick = () => {
+    currentGameMode = 'numbers';
+    elements.btnModeNumbers.classList.add('App__mode-btn_active');
+    elements.btnModeImage.classList.remove('App__mode-btn_active');
+    showSettingsScreen();
+    elements.settingsMessage.classList.remove('App__modal-btn_hidden');
+    renderBoard();
+  };
+
+  elements.btnModeImage.onclick = () => {
+    currentGameMode = 'image';
+    currentImageUrl = `https://picsum.photos/id/${currentImageId}/512/512`;
+    elements.btnModeImage.classList.add('App__mode-btn_active');
+    elements.btnModeNumbers.classList.remove('App__mode-btn_active');
+    fetchImagePreviews();
+    showSettingsScreen();
+    elements.settingsMessage.classList.remove('App__modal-btn_hidden');
+    renderBoard();
+  };
+
   elements.selectSize.addEventListener('change', (e) => {
     pendingGridSize = parseInt(e.target.value, 10);
-    elements.settingsMessage.style.display = 'block';
+    elements.settingsMessage.classList.remove('App__modal-btn_hidden');
     localStorage.setItem('gemPuzzle_pendingGridSize', pendingGridSize);
   });
 
@@ -428,7 +450,9 @@ function saveCurrentSession() {
     secondsElapsed,
     movesCount,
     gridSize,
-    isGameStarted
+    isGameStarted,
+    currentGameMode,
+    currentImageId
   };
   localStorage.setItem('gemPuzzle_currentSession', JSON.stringify(sessionData));
 }
@@ -450,7 +474,13 @@ function initSavedSession() {
       gridSize = session.gridSize || 4;
       isGameStarted = true;
 
-      elements.appMovesCounter.textContent = `Moves ${movesCount}`;
+      currentGameMode = session.currentGameMode || 'numbers';
+      currentImageId = session.currentImageId || '10';
+      if (currentGameMode === 'image') {
+        currentImageUrl = `https://picsum.photos/id/${currentImageId}/512/512`;
+      }
+
+      elements.appMovesCounter.textContent = `Moves  ${movesCount}`;
       elements.appTimer.textContent = formatTime(secondsElapsed);
 
       renderBoard();
@@ -476,11 +506,17 @@ function showSettingsScreen() {
   elements.modalContent.innerHTML = '';
   elements.selectSize.value = pendingGridSize.toString();
 
+  
   elements.settingsMessage.classList.add('App__modal-btn_hidden');
+  elements.settingsMessage.style.display = '';
 
   elements.modalContent.appendChild(elements.settingsTitle);
-  elements.modalContent.appendChild(elements.fieldSizeLabel);
-  elements.modalContent.appendChild(elements.selectSize);
+  elements.modalContent.appendChild(elements.settingsRow);
+
+  if (currentGameMode === 'image') {
+    elements.modalContent.appendChild(elements.previewsContainer);
+  }
+
   elements.modalContent.appendChild(elements.settingsMessage);
   elements.modalContent.appendChild(elements.btnGoBack);
 
@@ -520,7 +556,9 @@ function saveGameToStorage() {
     boardState: [...boardState],
     secondsElapsed,
     movesCount,
-    gridSize
+    gridSize,
+    currentGameMode, 
+    currentImageId
   };
 
   savedGames.unshift(newSave);
@@ -561,8 +599,8 @@ function showSavedGamesScreen() {
     savedGames.forEach((save, index) => {
       const mins = Math.floor(save.secondsElapsed / 60).toString().padStart(2, '0');
       const secs = (save.secondsElapsed % 60).toString().padStart(2, '0');
-      const text = (index + 1) + '. [' + save.gridSize + 'x' + save.gridSize + '] Time ' + mins + ':' + secs + ' | Moves:  ' + save.movesCount;
-
+      const modeText = save.currentGameMode === 'image' ? 'Image' : 'Numbers';
+      const text = (index + 1) + '. [' + save.gridSize + 'x' + save.gridSize + ' | ' + modeText + '] Time ' + mins + ':' + secs + ' | Moves: ' + save.movesCount;
       const {
         row,
         item,
@@ -600,6 +638,14 @@ function loadSavedGame(save) {
   secondsElapsed = save.secondsElapsed;
   movesCount = save.movesCount;
   gridSize = save.gridSize;
+
+  currentGameMode = save.currentGameMode || 'numbers';
+  currentImageId = save.currentImageId || '10';
+
+  if (currentGameMode === 'image') {
+    currentImageUrl = `https://picsum.photos/id/${currentImageId}/512/512`;
+  }
+
   isGameStarted = true;
   isPaused = false;
 
@@ -696,6 +742,48 @@ function showRulesScreen() {
       resetToMainMenu();
     }
   };
+}
+
+async function fetchImagePreviews() {
+  const imageIds = ['10', '15', '25'];
+  elements.previewsContainer.innerHTML = 'Loading previews...';
+
+  try {
+    const promises = imageIds.map(async (id) => {
+      const res = await fetch(`https://picsum.photos/id/${id}/info`);
+      if (!res.ok) throw new Error('Failed to fetch image info');
+      return res.json();
+    });
+
+    previewsList = await Promise.all(promises);
+    renderPreviewsUI();
+  } catch (err) {
+    console.error(err);
+    elements.previewsContainer.innerHTML = 'Failed to load previews';
+  }
+}
+
+function renderPreviewsUI() {
+  elements.previewsContainer.innerHTML = '';
+  previewsList.forEach((imgData) => {
+    const imgEl = document.createElement('img');
+    imgEl.src = `https://picsum.photos/id/${imgData.id}/150/150`;
+    imgEl.classList.add('App__preview-img');
+
+    if (imgData.id.toString() === currentImageId.toString()) {
+      imgEl.classList.add('App__preview-img_selected');
+    }
+
+    imgEl.onclick = () => {
+      currentImageId = imgData.id.toString();
+      currentImageUrl = `https://picsum.photos/id/${currentImageId}/512/512`;
+      renderPreviewsUI();
+      renderBoard();
+      elements.settingsMessage.classList.remove('App__modal-btn_hidden');
+    };
+
+    elements.previewsContainer.appendChild(imgEl);
+  });
 }
 
 module.exports = {

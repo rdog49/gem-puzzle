@@ -176,13 +176,17 @@ body {
   transform: scale(1.02);
 }
 
+.App__modal-btn_hidden {
+  display: none !important;
+}
+
 /*стили победной менюшки*/
 
 .App__modal-text_win-title {
   color: #81ef84;
   font-weight: 800;
   font-size: 24px;
-  margin-top: 120px;
+  margin-top: 60px;
 }
 
 .App__modal-text_win-subtitle {
@@ -347,8 +351,9 @@ body {
   }
 
   .App__modal-text_win-title {
-    margin-top: 50px;
+    margin-top: 10px;
     font-size: 20px;
+    font-size: 15px;
   }
 
   .App__modal-text_win-details {
@@ -374,7 +379,20 @@ body {
   }
   
   .App__modal-btn-back{
-    margin-top: 10px;
+    margin-top: -15px;
+  }
+
+  .App__preview-img{
+    width: 40px;
+    height: 40px;
+  }
+
+  .App__modal-text_settings-msg{
+    margin: -30px 0 10px 0;
+  }
+  .Rules__text{
+    padding: 0 10px;
+    font-size: 14px;
   }
 
 }

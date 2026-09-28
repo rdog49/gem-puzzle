@@ -159,7 +159,7 @@ selectSize.classList.add('App__modal-select');
 
 const settingsMessage = document.createElement('p');
 settingsMessage.classList.add('App__modal-text', 'App__modal-text_settings-msg', 'App__modal-btn_hidden');
-settingsMessage.innerHTML = 'Changes saved! <br> Start new game to get new field size';
+settingsMessage.innerHTML = 'Changes saved! <br> press go back and start new game to see the changes.';
 
 const pauseText = document.createElement('p');
 pauseText.classList.add('App__modal-text');
@@ -247,5 +247,5 @@ initGame({
   createBestScoreRow,
   rulesTitle,
   rulesText,
-  btnSound
+  btnSound,
 });
