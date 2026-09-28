@@ -272,6 +272,25 @@ body {
   color: #81ef84;
 }
 
+/* Список рекордов */
+.App__scores-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.App__score-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  font-size: 14px;
+}
+
 /* Адаптив */
 
 @media (max-width: 460px) {
