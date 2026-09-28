@@ -181,6 +181,17 @@ function createSavedGameRow(text) {
   return { row, item, btnDelete };
 }
 
+function createBestScoreRow(rank, gridSize, timeStr, moves) {
+  const row = document.createElement('div');
+  row.classList.add('App__score-item');
+
+  const infoText = document.createElement('span');
+  infoText.textContent = `${rank}. [${gridSize}x${gridSize}] Time: ${timeStr} | Moves: ${moves}`;
+
+  row.appendChild(infoText);
+  return row;
+}
+
 modalContent.appendChild(modalTopBox);
 
 modalContent.appendChild(modalTopBox);
@@ -216,5 +227,6 @@ initGame({
   settingsMessage,
   savedGamesTitle,
   pauseText,
-  createSavedGameRow
+  createSavedGameRow,
+  createBestScoreRow
 });
