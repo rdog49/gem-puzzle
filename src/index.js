@@ -85,6 +85,12 @@ const btnSettings = document.createElement('button');
 btnSettings.classList.add('App__modal-btn');
 btnSettings.textContent = 'Settings';
 
+// кнопка звука
+
+const btnSound = document.createElement('button');
+btnSound.classList.add('App__modal-btn', 'App__modal-btn_sound-on');
+btnSound.textContent = 'sound';
+
 // победный экран
 
 function createWinScreenContent(minutes, seconds, movesCount, gridSize) {
@@ -195,11 +201,11 @@ function createBestScoreRow(rank, gridSize, timeStr, moves) {
 // Элементы меню Rules
 const rulesTitle = document.createElement('h2');
 rulesTitle.classList.add('Rules__title');
-rulesTitle.textContent = 'Rules of Gem Puzzle';
+rulesTitle.textContent = 'Rules of Gem-Puzzle';
 
 const rulesText = document.createElement('p');
 rulesText.classList.add('Rules__text');
-rulesText.textContent = 'The object of the puzzle is to place the tiles in order by making sliding moves that use the empty space. You can save your game and load it later. Or you can just use pause button. Also you can choose game field size in Settings.';
+rulesText.textContent = 'The object of the puzzle is to place the tiles in order by making sliding moves that use the empty space. You can save your game and load it later. Or you can just use pause button. Also you can choose game field size in Settings. Sound can be turned on/off in Pause menu.';
 
 modalContent.appendChild(modalTopBox);
 
@@ -209,6 +215,7 @@ modalContent.appendChild(btnSavedGames);
 modalContent.appendChild(btnBestScores);
 modalContent.appendChild(btnRules);
 modalContent.appendChild(btnSettings);
+modalContent.appendChild(btnSound);
 
 modalOverlay.appendChild(modalContent);
 mainBoardContainer.appendChild(modalOverlay);
@@ -239,5 +246,6 @@ initGame({
   createSavedGameRow,
   createBestScoreRow,
   rulesTitle,
-  rulesText
+  rulesText,
+  btnSound
 });

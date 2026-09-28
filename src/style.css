@@ -302,6 +302,15 @@ body {
   font-weight: 600;
 }
 
+/* кнопка звука */
+.App__modal-btn_sound-on {
+  color: #2eb85c;
+}
+
+.App__modal-btn_sound-off {
+  color: #888888;
+}
+
 /* Адаптив */
 
 @media (max-width: 460px) {
