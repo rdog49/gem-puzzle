@@ -11,6 +11,50 @@ let boardState = Array.from({
 
 let elements = {};
 
+let isSoundEnabled = true;
+
+function playTileSound() {
+  if (!isSoundEnabled) return;
+  try {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return;
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(450, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 0.04);
+
+    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.04);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start();
+    osc.stop(ctx.currentTime + 0.04);
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+function updateSoundButtonState() {
+  if (isSoundEnabled) {
+    elements.btnSound.classList.add('App__modal-btn_sound-on');
+    elements.btnSound.classList.remove('App__modal-btn_sound-off');
+  } else {
+    elements.btnSound.classList.add('App__modal-btn_sound-off');
+    elements.btnSound.classList.remove('App__modal-btn_sound-on');
+  }
+}
+
+function toggleSound() {
+  isSoundEnabled = !isSoundEnabled;
+  localStorage.setItem('gemPuzzle_sound', isSoundEnabled ? 'on' : 'off');
+  updateSoundButtonState();
+}
+
 function formatTime(totalSeconds) {
   const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
   const seconds = (totalSeconds % 60).toString().padStart(2, '0');
@@ -50,6 +94,7 @@ function moveTile(board, tileIndex) {
 
   if (canMove(tileIndex, emptyIndex, gridSize)) {
     [board[emptyIndex], board[tileIndex]] = [board[tileIndex], board[emptyIndex]];
+    playTileSound();
     saveCurrentSession();
     return true;
   }
@@ -113,6 +158,7 @@ function renderMainMenu() {
   elements.modalContent.appendChild(elements.btnBestScores);
   elements.modalContent.appendChild(elements.btnRules);
   elements.modalContent.appendChild(elements.btnSettings);
+  elements.modalContent.appendChild(elements.btnSound);
   elements.btnGoBack.classList.add('App__modal-btn_hidden');
 }
 
@@ -277,12 +323,19 @@ function initGame(domElements) {
     pendingGridSize = parseInt(savedPendingSize, 10);
   }
 
+  const savedSound = localStorage.getItem('gemPuzzle_sound');
+  if (savedSound !== null) {
+    isSoundEnabled = savedSound === 'on';
+  }
+  updateSoundButtonState();
+
   elements.btnNewGame.addEventListener('click', startNewGame);
   elements.appPauseResumeGame.addEventListener('click', togglePause);
   elements.btnSettings.addEventListener('click', showSettingsScreen);
   elements.btnSavedGames.addEventListener('click', showSavedGamesScreen);
   elements.btnBestScores.addEventListener('click', showBestScoresScreen);
-  elements.btnRules.addEventListener('click', showRulesScreen);
+  elements.btnRules.addEventListener('click', showRulesScreen);a
+  elements.btnSound.addEventListener('click', toggleSound);
   if (elements.btnSaveGame) {
     elements.btnSaveGame.addEventListener('click', saveGameToStorage);
   }
