@@ -311,6 +311,12 @@ body {
   color: #888888;
 }
 
+/* плавная анимация для клика */
+.App__tile_moving {
+  transition: transform 0.15s ease-in-out;
+  z-index: 10;
+}
+
 /* Адаптив */
 
 @media (max-width: 460px) {

@@ -5,6 +5,7 @@ let secondsElapsed = 0;
 let movesCount = 0;
 let gridSize = 4;
 let pendingGridSize = 4;
+let isAnimating = false;
 let boardState = Array.from({
   length: gridSize * gridSize
 }, (_, i) => i === gridSize * gridSize - 1 ? 0 : i + 1);
@@ -101,6 +102,50 @@ function moveTile(board, tileIndex) {
   return false;
 }
 
+function handleTileClick(tileIndex) {
+  if (isAnimating || isPaused || !isGameStarted) return;
+
+  const emptyIndex = boardState.indexOf(0);
+
+  if (canMove(tileIndex, emptyIndex, gridSize)) {
+    const tileElement = elements.mainBoardContainer.children[tileIndex];
+    const emptyElement = elements.mainBoardContainer.children[emptyIndex];
+
+    if (!tileElement || !emptyElement) return;
+
+    isAnimating = true;
+
+    const tileRect = tileElement.getBoundingClientRect();
+    const emptyRect = emptyElement.getBoundingClientRect();
+
+    const deltaX = emptyRect.left - tileRect.left;
+    const deltaY = emptyRect.top - tileRect.top;
+
+    playTileSound();
+
+    tileElement.classList.add('App__tile_moving');
+    tileElement.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+
+    setTimeout(() => {
+      tileElement.classList.remove('App__tile_moving');
+      tileElement.style.transform = '';
+
+      [boardState[emptyIndex], boardState[tileIndex]] = [boardState[tileIndex], boardState[emptyIndex]];
+      movesCount++;
+      elements.appMovesCounter.textContent = 'Moves ' + movesCount;
+
+      saveCurrentSession();
+      renderBoard();
+
+      isAnimating = false;
+
+      if (isWinningBoard(boardState)) {
+        showWinScreen();
+      }
+    }, 150);
+  }
+}
+
 function isSolvable(board, gridSize = 4) {
   let inversions = 0;
   const nums = board.filter(n => n !== 0);
@@ -168,7 +213,7 @@ function renderBoard() {
   elements.mainBoardContainer.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
   elements.mainBoardContainer.style.gridTemplateRows = `repeat(${gridSize}, 1fr)`;
 
-let fontSize = '32px';
+  let fontSize = '32px';
   if (gridSize === 5) fontSize = '26px';
   if (gridSize === 6) fontSize = '22px';
   if (gridSize === 7) fontSize = '18px';
@@ -224,16 +269,7 @@ let fontSize = '32px';
 
       tile.addEventListener('click', () => {
         if (isPaused) return;
-        const moved = moveTile(boardState, index);
-        if (moved) {
-          movesCount++;
-          elements.appMovesCounter.textContent = `Moves ${movesCount}`;
-          renderBoard();
-
-          if (isWinningBoard(boardState)) {
-            showWinScreen();
-          }
-        }
+        handleTileClick(index);
       });
     }
 
@@ -342,7 +378,7 @@ function initGame(domElements) {
 
   elements.selectSize.addEventListener('change', (e) => {
     pendingGridSize = parseInt(e.target.value, 10);
-    elements.settingsMessage.style.display = 'block'; 
+    elements.settingsMessage.style.display = 'block';
     localStorage.setItem('gemPuzzle_pendingGridSize', pendingGridSize);
   });
 
@@ -511,7 +547,11 @@ function showSavedGamesScreen() {
       const secs = (save.secondsElapsed % 60).toString().padStart(2, '0');
       const text = (index + 1) + '. [' + save.gridSize + 'x' + save.gridSize + '] Time ' + mins + ':' + secs + ' | Moves:  ' + save.movesCount;
 
-      const { row, item, btnDelete } = elements.createSavedGameRow(text);
+      const {
+        row,
+        item,
+        btnDelete
+      } = elements.createSavedGameRow(text);
 
       item.onclick = () => {
         loadSavedGame(save);
@@ -547,7 +587,7 @@ function loadSavedGame(save) {
   isGameStarted = true;
   isPaused = false;
 
-  elements.appMovesCounter.textContent = `Moves`+ movesCount;
+  elements.appMovesCounter.textContent = `Moves` + movesCount;
   elements.appTimer.textContent = formatTime(secondsElapsed);
 
   renderBoard();
