@@ -192,6 +192,15 @@ function createBestScoreRow(rank, gridSize, timeStr, moves) {
   return row;
 }
 
+// Элементы меню Rules
+const rulesTitle = document.createElement('h2');
+rulesTitle.classList.add('Rules__title');
+rulesTitle.textContent = 'Rules of Gem Puzzle';
+
+const rulesText = document.createElement('p');
+rulesText.classList.add('Rules__text');
+rulesText.textContent = 'The object of the puzzle is to place the tiles in order by making sliding moves that use the empty space. You can save your game and load it later. Or you can just use pause button. Also you can choose game field size in Settings.';
+
 modalContent.appendChild(modalTopBox);
 
 modalContent.appendChild(modalTopBox);
@@ -228,5 +237,7 @@ initGame({
   savedGamesTitle,
   pauseText,
   createSavedGameRow,
-  createBestScoreRow
+  createBestScoreRow,
+  rulesTitle,
+  rulesText
 });

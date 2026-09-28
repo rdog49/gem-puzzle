@@ -282,6 +282,7 @@ function initGame(domElements) {
   elements.btnSettings.addEventListener('click', showSettingsScreen);
   elements.btnSavedGames.addEventListener('click', showSavedGamesScreen);
   elements.btnBestScores.addEventListener('click', showBestScoresScreen);
+  elements.btnRules.addEventListener('click', showRulesScreen);
   if (elements.btnSaveGame) {
     elements.btnSaveGame.addEventListener('click', saveGameToStorage);
   }
@@ -562,6 +563,22 @@ function showBestScoresScreen() {
   }
 
   elements.modalContent.appendChild(elements.btnGoBack);
+  elements.btnGoBack.classList.remove('App__modal-btn_hidden');
+  elements.btnGoBack.onclick = () => {
+    if (isPaused) {
+      renderMainMenu();
+    } else {
+      resetToMainMenu();
+    }
+  };
+}
+
+function showRulesScreen() {
+  elements.modalContent.innerHTML = '';
+  elements.modalContent.appendChild(elements.rulesTitle);
+  elements.modalContent.appendChild(elements.rulesText);
+  elements.modalContent.appendChild(elements.btnGoBack);
+
   elements.btnGoBack.classList.remove('App__modal-btn_hidden');
   elements.btnGoBack.onclick = () => {
     if (isPaused) {
