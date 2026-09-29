@@ -1,3 +1,5 @@
+import { GRID_FONT_SIZE } from './constants.js';
+
 let isPaused = false;
 let isGameStarted = false;
 let timerInterval = null;
@@ -9,10 +11,13 @@ let isAnimating = false;
 let currentImageId = '10';
 let previewsList = [];
 let currentGameMode = 'numbers'; // 'image' or 'numbers'
-let currentImageUrl = 'https://picsum.photos/id/10/512/512'; 
-let boardState = Array.from({
-  length: gridSize * gridSize
-}, (_, i) => i === gridSize * gridSize - 1 ? 0 : i + 1);
+let currentImageUrl = 'https://picsum.photos/id/10/512/512';
+let boardState = Array.from(
+  {
+    length: gridSize * gridSize,
+  },
+  (_, i) => (i === gridSize * gridSize - 1 ? 0 : i + 1)
+);
 
 let elements = {};
 
@@ -61,9 +66,11 @@ function toggleSound() {
 }
 
 function formatTime(totalSeconds) {
-  const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+  const minutes = Math.floor(totalSeconds / 60)
+    .toString()
+    .padStart(2, '0');
   const seconds = (totalSeconds % 60).toString().padStart(2, '0');
-  return 'Time ' + minutes + ':' + seconds;
+  return `Time ${minutes}:${seconds}`;
 }
 
 function startTimer() {
@@ -91,14 +98,17 @@ function canMove(tileIndex, emptyIndex, currentGridSize = gridSize) {
   const emptyRow = Math.floor(emptyIndex / currentGridSize);
   const emptyCol = emptyIndex % currentGridSize;
 
-  return (Math.abs(row - emptyRow) + Math.abs(col - emptyCol)) === 1;
+  return Math.abs(row - emptyRow) + Math.abs(col - emptyCol) === 1;
 }
 
 function moveTile(board, tileIndex) {
   const emptyIndex = board.indexOf(0);
 
   if (canMove(tileIndex, emptyIndex, gridSize)) {
-    [board[emptyIndex], board[tileIndex]] = [board[tileIndex], board[emptyIndex]];
+    [board[emptyIndex], board[tileIndex]] = [
+      board[tileIndex],
+      board[emptyIndex],
+    ];
     playTileSound();
     saveCurrentSession();
     return true;
@@ -134,9 +144,12 @@ function handleTileClick(tileIndex) {
       tileElement.classList.remove('App__tile_moving');
       tileElement.style.transform = '';
 
-      [boardState[emptyIndex], boardState[tileIndex]] = [boardState[tileIndex], boardState[emptyIndex]];
+      [boardState[emptyIndex], boardState[tileIndex]] = [
+        boardState[tileIndex],
+        boardState[emptyIndex],
+      ];
       movesCount++;
-      elements.appMovesCounter.textContent = 'Moves ' + movesCount;
+      elements.appMovesCounter.textContent = `Moves ${movesCount}`;
 
       saveCurrentSession();
       renderBoard();
@@ -152,7 +165,7 @@ function handleTileClick(tileIndex) {
 
 function isSolvable(board, gridSize = 4) {
   let inversions = 0;
-  const nums = board.filter(n => n !== 0);
+  const nums = board.filter((n) => n !== 0);
 
   for (let i = 0; i < nums.length; i++) {
     for (let j = i + 1; j < nums.length; j++) {
@@ -164,15 +177,13 @@ function isSolvable(board, gridSize = 4) {
 
   if (gridSize % 2 !== 0) {
     return inversions % 2 === 0;
-  } else {
-    const emptyIndex = board.indexOf(0);
-    const rowFromBottom = gridSize - Math.floor(emptyIndex / gridSize);
-    if (rowFromBottom % 2 !== 0) {
-      return inversions % 2 === 0;
-    } else {
-      return inversions % 2 !== 0;
-    }
   }
+  const emptyIndex = board.indexOf(0);
+  const rowFromBottom = gridSize - Math.floor(emptyIndex / gridSize);
+  if (rowFromBottom % 2 !== 0) {
+    return inversions % 2 === 0;
+  }
+  return inversions % 2 !== 0;
 }
 
 function isWinningBoard(board) {
@@ -187,9 +198,12 @@ function generateSolvableBoard(gridSize = 4) {
   let board;
 
   do {
-    board = Array.from({
-      length: totalTiles
-    }, (_, i) => i);
+    board = Array.from(
+      {
+        length: totalTiles,
+      },
+      (_, i) => i
+    );
     for (let i = board.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [board[i], board[j]] = [board[j], board[i]];
@@ -212,16 +226,11 @@ function renderMainMenu() {
 }
 
 function renderBoard() {
-  elements.mainBoardContainer.innerHTML = '';
+  const fontSize = GRID_FONT_SIZE[gridSize];
 
+  elements.mainBoardContainer.innerHTML = '';
   elements.mainBoardContainer.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
   elements.mainBoardContainer.style.gridTemplateRows = `repeat(${gridSize}, 1fr)`;
-
-  let fontSize = '32px';
-  if (gridSize === 5) fontSize = '26px';
-  if (gridSize === 6) fontSize = '22px';
-  if (gridSize === 7) fontSize = '18px';
-  if (gridSize === 8) fontSize = '15px';
 
   boardState.forEach((value, index) => {
     const tile = document.createElement('div');
@@ -311,8 +320,8 @@ function startNewGame() {
   elements.appMovesCounter.textContent = `Moves  ${movesCount}`;
 
   boardState = generateSolvableBoard(gridSize);
-  renderBoard();
 
+  renderBoard();
   resetTimer();
   startTimer();
   saveCurrentSession();
@@ -330,7 +339,9 @@ function showWinScreen() {
   elements.appPauseResumeGame.classList.add('App_pause-resume_disabled');
   elements.modalContent.innerHTML = '';
 
-  const minutes = Math.floor(secondsElapsed / 60).toString().padStart(2, '0');
+  const minutes = Math.floor(secondsElapsed / 60)
+    .toString()
+    .padStart(2, '0');
   const seconds = (secondsElapsed % 60).toString().padStart(2, '0');
 
   const winElements = elements.createWinScreenContent(
@@ -340,7 +351,7 @@ function showWinScreen() {
     gridSize
   );
 
-  winElements.forEach(el => {
+  winElements.forEach((el) => {
     elements.modalContent.appendChild(el);
   });
 
@@ -359,9 +370,12 @@ function showWinScreen() {
 function resetToMainMenu() {
   renderMainMenu();
 
-  boardState = Array.from({
-    length: gridSize * gridSize
-  }, (_, i) => i === gridSize * gridSize - 1 ? 0 : i + 1);
+  boardState = Array.from(
+    {
+      length: gridSize * gridSize,
+    },
+    (_, i) => (i === gridSize * gridSize - 1 ? 0 : i + 1)
+  );
   renderBoard();
 
   elements.modalOverlay.classList.remove('App__modal-overlay_hidden');
@@ -433,9 +447,12 @@ function initGame(domElements) {
 
     elements.btnGoBack.classList.add('App__modal-btn_hidden');
 
-    boardState = Array.from({
-      length: gridSize * gridSize
-    }, (_, i) => i === gridSize * gridSize - 1 ? 0 : i + 1);
+    boardState = Array.from(
+      {
+        length: gridSize * gridSize,
+      },
+      (_, i) => (i === gridSize * gridSize - 1 ? 0 : i + 1)
+    );
     renderBoard();
 
     elements.modalOverlay.classList.remove('App__modal-overlay_hidden');
@@ -452,7 +469,7 @@ function saveCurrentSession() {
     gridSize,
     isGameStarted,
     currentGameMode,
-    currentImageId
+    currentImageId,
   };
   localStorage.setItem('gemPuzzle_currentSession', JSON.stringify(sessionData));
 }
@@ -506,7 +523,6 @@ function showSettingsScreen() {
   elements.modalContent.innerHTML = '';
   elements.selectSize.value = pendingGridSize.toString();
 
-  
   elements.settingsMessage.classList.add('App__modal-btn_hidden');
   elements.settingsMessage.style.display = '';
 
@@ -549,7 +565,9 @@ function togglePause() {
 function saveGameToStorage() {
   if (!isGameStarted) return;
 
-  const savedGames = JSON.parse(localStorage.getItem('gemPuzzle_savedGames') || '[]');
+  const savedGames = JSON.parse(
+    localStorage.getItem('gemPuzzle_savedGames') || '[]'
+  );
 
   const newSave = {
     id: Date.now(),
@@ -557,8 +575,8 @@ function saveGameToStorage() {
     secondsElapsed,
     movesCount,
     gridSize,
-    currentGameMode, 
-    currentImageId
+    currentGameMode,
+    currentImageId,
   };
 
   savedGames.unshift(newSave);
@@ -575,8 +593,10 @@ function saveGameToStorage() {
 }
 
 function deleteSavedGame(id) {
-  let savedGames = JSON.parse(localStorage.getItem('gemPuzzle_savedGames') || '[]');
-  savedGames = savedGames.filter(save => save.id !== id);
+  let savedGames = JSON.parse(
+    localStorage.getItem('gemPuzzle_savedGames') || '[]'
+  );
+  savedGames = savedGames.filter((save) => save.id !== id);
   localStorage.setItem('gemPuzzle_savedGames', JSON.stringify(savedGames));
   showSavedGamesScreen();
 }
@@ -585,7 +605,9 @@ function showSavedGamesScreen() {
   elements.modalContent.innerHTML = '';
   elements.modalContent.appendChild(elements.savedGamesTitle);
 
-  const savedGames = JSON.parse(localStorage.getItem('gemPuzzle_savedGames') || '[]');
+  const savedGames = JSON.parse(
+    localStorage.getItem('gemPuzzle_savedGames') || '[]'
+  );
 
   if (savedGames.length === 0) {
     const emptyMsg = document.createElement('p');
@@ -597,15 +619,15 @@ function showSavedGamesScreen() {
     list.classList.add('App__saved-list');
 
     savedGames.forEach((save, index) => {
-      const mins = Math.floor(save.secondsElapsed / 60).toString().padStart(2, '0');
+      const mins = Math.floor(save.secondsElapsed / 60)
+        .toString()
+        .padStart(2, '0');
       const secs = (save.secondsElapsed % 60).toString().padStart(2, '0');
       const modeText = save.currentGameMode === 'image' ? 'Image' : 'Numbers';
-      const text = (index + 1) + '. [' + save.gridSize + 'x' + save.gridSize + ' | ' + modeText + '] Time ' + mins + ':' + secs + ' | Moves: ' + save.movesCount;
-      const {
-        row,
-        item,
-        btnDelete
-      } = elements.createSavedGameRow(text);
+      const text = `${index + 1}. [${save.gridSize}x${save.gridSize} | ${
+        modeText
+      }] Time ${mins}:${secs} | Moves: ${save.movesCount}`;
+      const { row, item, btnDelete } = elements.createSavedGameRow(text);
 
       item.onclick = () => {
         loadSavedGame(save);
@@ -649,7 +671,7 @@ function loadSavedGame(save) {
   isGameStarted = true;
   isPaused = false;
 
-  elements.appMovesCounter.textContent = `Moves` + movesCount;
+  elements.appMovesCounter.textContent = `Moves${movesCount}`;
   elements.appTimer.textContent = formatTime(secondsElapsed);
 
   renderBoard();
@@ -665,16 +687,20 @@ function loadSavedGame(save) {
 }
 
 function saveBestScore(gridSize, secondsElapsed, movesCount) {
-  const scores = JSON.parse(localStorage.getItem('gemPuzzle_bestScores') || '[]');
+  const scores = JSON.parse(
+    localStorage.getItem('gemPuzzle_bestScores') || '[]'
+  );
 
   scores.push({
     gridSize,
     secondsElapsed,
     movesCount,
-    id: Date.now()
+    id: Date.now(),
   });
 
-  scores.sort((a, b) => a.movesCount - b.movesCount || a.secondsElapsed - b.secondsElapsed);
+  scores.sort(
+    (a, b) => a.movesCount - b.movesCount || a.secondsElapsed - b.secondsElapsed
+  );
 
   const top10 = scores.slice(0, 10);
   localStorage.setItem('gemPuzzle_bestScores', JSON.stringify(top10));
@@ -688,7 +714,9 @@ function showBestScoresScreen() {
   title.textContent = 'Top 10 Best Scores:';
   elements.modalContent.appendChild(title);
 
-  const scores = JSON.parse(localStorage.getItem('gemPuzzle_bestScores') || '[]');
+  const scores = JSON.parse(
+    localStorage.getItem('gemPuzzle_bestScores') || '[]'
+  );
 
   if (scores.length === 0) {
     const emptyMsg = document.createElement('p');
@@ -700,7 +728,9 @@ function showBestScoresScreen() {
     list.classList.add('App__scores-list');
 
     scores.forEach((score, index) => {
-      const mins = Math.floor(score.secondsElapsed / 60).toString().padStart(2, '0');
+      const mins = Math.floor(score.secondsElapsed / 60)
+        .toString()
+        .padStart(2, '0');
       const secs = (score.secondsElapsed % 60).toString().padStart(2, '0');
       const timeStr = `${mins}:${secs}`;
 
@@ -786,9 +816,4 @@ function renderPreviewsUI() {
   });
 }
 
-module.exports = {
-  initGame,
-  moveTile,
-  generateSolvableBoard,
-  isWinningBoard
-};
+export { initGame, moveTile, generateSolvableBoard, isWinningBoard };

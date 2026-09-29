@@ -1,8 +1,7 @@
-require('./style.css');
+import { initGame } from './logic.js';
+import { createElement } from './utils.js';
 
-const {
-  initGame
-} = require('./logic.js');
+import './style.css';
 
 // шампка & основной контейнер
 
@@ -18,28 +17,32 @@ timerMovesPauseContainer.classList.add('Secondary__container');
 
 // время, шаги и кнопка паузы
 
-const appTimer = document.createElement('h2');
-appTimer.classList.add('App__timer');
-appTimer.textContent = 'Time 00:00';
-timerMovesPauseContainer.appendChild(appTimer);
+const appTimer = createElement({
+  tagName: 'h2',
+  className: 'App__timer',
+  textContent: 'Time 00:00',
+  parent: timerMovesPauseContainer,
+});
+const appMovesCounter = createElement({
+  tagName: 'h2',
+  className: 'App__moves-counter',
+  textContent: 'Moves 0',
+  parent: timerMovesPauseContainer,
+});
+const appPauseResumeGame = createElement({
+  tagName: 'h2',
+  className: 'App_pause-resume',
+  textContent: 'Pause game',
+  parent: timerMovesPauseContainer,
+});
+const mainBoardContainer = createElement({
+  tagName: 'div',
+  className: 'App__board-container',
+  parent: mainAppContainer,
+});
 
-const appMovesCounter = document.createElement('h2');
-appMovesCounter.classList.add('App__moves-counter');
-appMovesCounter.textContent = 'Moves 0';
-timerMovesPauseContainer.appendChild(appMovesCounter);
-
-const appPauseResumeGame = document.createElement('h2');
-appPauseResumeGame.classList.add('App_pause-resume');
-appPauseResumeGame.textContent = 'Pause game';
-timerMovesPauseContainer.appendChild(appPauseResumeGame);
-
-const mainBoardContainer = document.createElement('div');
-mainBoardContainer.classList.add('App__board-container');
-mainAppContainer.appendChild(mainBoardContainer);
-
-document.body.appendChild(mainAppContainer);
-document.body.appendChild(timerMovesPauseContainer);
-document.body.appendChild(mainAppTitle);
+const rootElements = [mainAppContainer, timerMovesPauseContainer, mainAppTitle];
+document.body.append(...rootElements);
 
 // структура бургер менюшки
 
@@ -105,7 +108,7 @@ function createWinScreenContent(minutes, seconds, movesCount, gridSize) {
   const winDetails = document.createElement('p');
   winDetails.classList.add('App__modal-text', 'App__modal-text_win-details');
 
-  winDetails.textContent = "You won the game in ";
+  winDetails.textContent = 'You won the game in ';
 
   const spanMoves = document.createElement('span');
   spanMoves.className = 'App__modal-text_highlight';
@@ -119,14 +122,14 @@ function createWinScreenContent(minutes, seconds, movesCount, gridSize) {
   spanTime.textContent = `${minutes} min ${seconds} sec`;
   winDetails.appendChild(spanTime);
 
-  winDetails.append(" and you solved ");
+  winDetails.append(' and you solved ');
 
   const spanGrid = document.createElement('span');
   spanGrid.className = 'App__modal-text_highlight';
   spanGrid.textContent = `${gridSize}x${gridSize}`;
   winDetails.appendChild(spanGrid);
 
-  winDetails.append(" puzzle!");
+  winDetails.append(' puzzle!');
 
   return [winTitle, winSubtitle, winDetails];
 }
@@ -134,7 +137,11 @@ function createWinScreenContent(minutes, seconds, movesCount, gridSize) {
 // универсальная кнопка go back для всех менюшек
 
 const btnGoBack = document.createElement('button');
-btnGoBack.classList.add('App__modal-btn', 'App__modal-btn_hidden', 'App__modal-btn-back');
+btnGoBack.classList.add(
+  'App__modal-btn',
+  'App__modal-btn_hidden',
+  'App__modal-btn-back'
+);
 btnGoBack.textContent = 'go back';
 
 // менюшка Settings
@@ -149,24 +156,32 @@ fieldSizeLabel.textContent = 'Field size:';
 const selectSize = document.createElement('select');
 selectSize.classList.add('App__modal-select');
 
-['3x3', '4x4', '5x5', '6x6', '7x7', '8x8'].forEach(sizeStr => {
+['3x3', '4x4', '5x5', '6x6', '7x7', '8x8'].forEach((sizeStr) => {
   const option = document.createElement('option');
-  option.value = sizeStr[0]; 
+  option.value = sizeStr[0];
   option.textContent = sizeStr;
   if (sizeStr === '4x4') option.selected = true;
   selectSize.appendChild(option);
 });
 
 const settingsMessage = document.createElement('p');
-settingsMessage.classList.add('App__modal-text', 'App__modal-text_settings-msg', 'App__modal-btn_hidden');
-settingsMessage.innerHTML = 'Changes saved! <br> press go back and start new game to see the changes.';
+settingsMessage.classList.add(
+  'App__modal-text',
+  'App__modal-text_settings-msg',
+  'App__modal-btn_hidden'
+);
+settingsMessage.innerHTML =
+  'Changes saved! <br> press go back and start new game to see the changes.';
 
 const pauseText = document.createElement('p');
 pauseText.classList.add('App__modal-text');
 pauseText.textContent = 'game paused, want to save it?';
 
 const savedGamesTitle = document.createElement('p');
-savedGamesTitle.classList.add('App__modal-text', 'App__modal-text_win-subtitle');
+savedGamesTitle.classList.add(
+  'App__modal-text',
+  'App__modal-text_win-subtitle'
+);
 savedGamesTitle.textContent = 'your saved games:';
 
 function createSavedGameRow(text) {
@@ -205,7 +220,8 @@ rulesTitle.textContent = 'Rules of Gem-Puzzle';
 
 const rulesText = document.createElement('p');
 rulesText.classList.add('Rules__text');
-rulesText.textContent = 'The object of the puzzle is to place the tiles in order by making sliding moves that use the empty space. You can save your game and load it later. Or you can just use pause button. Also you can choose game field size in Settings. Sound can be turned on/off in Pause menu.';
+rulesText.textContent =
+  'The object of the puzzle is to place the tiles in order by making sliding moves that use the empty space. You can save your game and load it later. Or you can just use pause button. Also you can choose game field size in Settings. Sound can be turned on/off in Pause menu.';
 
 // Элементы выбора режима игры
 const modeLabel = document.createElement('p');
@@ -294,5 +310,5 @@ initGame({
   btnModeNumbers,
   btnModeImage,
   previewsContainer,
-  settingsRow
+  settingsRow,
 });
